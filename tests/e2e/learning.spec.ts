@@ -84,3 +84,24 @@ test('Monaco loads from local assets and unrelated assertions do not complete a 
     await page.evaluate(() => JSON.parse(localStorage.getItem('testlab-progress-v1')!).completed),
   ).toEqual([]);
 });
+
+test('project guide teaches real file paths and copies runnable TypeScript tests', async ({
+  page,
+  context,
+}) => {
+  await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+  await page.goto('/?view=playground&lesson=first-test');
+  await page.getByRole('button', { name: 'Your project', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Use this in your own project.' })).toBeVisible();
+  await expect(page.locator('.project-guide')).toContainText('tests/add.test.js');
+  await page.getByRole('button', { name: 'TypeScript', exact: true }).click();
+  await expect(page.locator('.project-guide')).toContainText('tests/add.test.ts');
+  await expect(page.locator('.project-guide')).toContainText('add(a: number, b: number)');
+  await expect(page.locator('.project-guide')).toContainText('npm test -- tests/add.test.ts');
+  await page.getByRole('button', { name: 'Copy tests/add.test.ts', exact: true }).click();
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toContain(
+    "import { add } from '../src/utils/add'",
+  );
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+});
