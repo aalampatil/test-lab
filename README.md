@@ -21,6 +21,7 @@ Open http://localhost:3000. The overview is the default workspace. The About Tes
 - Ten testing fundamentals with examples and scored knowledge checks.
 - Six hands-on lessons covering addition, shipping boundaries, cart totals, checkout integration, coupon regression, and age validation.
 - Editable, saved test drafts; reset, hints, a syntax guide, run status, expected/actual results, and beginner-friendly explanations.
+- A “Your project” guide in every exercise: exact repository folders and filenames, JavaScript/TypeScript source and tests, copy buttons, Vitest configuration, npm scripts, run/watch commands, and troubleshooting.
 - Completion checks that require passing assertions, required inputs, and detection of deliberate bugs. `expect(true).toBe(true)` never completes a challenge.
 - A searchable/filterable catalog of Vitest, Jest, React Testing Library, Playwright, Cypress, and Postman, including installation examples and documentation links. Only Vitest-style lessons execute.
 - Local progress, profile name, theme selection, recent activity, keyboard search, and responsive navigation.
