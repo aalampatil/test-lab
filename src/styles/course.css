@@ -1,0 +1,325 @@
+.study-plan-note,
+.repository-mode-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  padding: 20px;
+  background: var(--peach);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  margin-bottom: 24px;
+  color: #ba8a64;
+}
+.study-plan-note strong,
+.repository-mode-note strong {
+  font-size: 13px;
+}
+.study-plan-note p,
+.repository-mode-note p {
+  font-size: 11px;
+  margin-top: 6px;
+  line-height: 1.8;
+}
+.curriculum-filters {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 24px 0;
+}
+.curriculum-filters .search-field {
+  flex: 1;
+  min-width: 180px;
+}
+.curriculum-filters input {
+  width: 100%;
+  font-size: 11px;
+}
+.curriculum-filters select,
+.glossary-filter {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 11px;
+  border-radius: 6px;
+  padding: 10px;
+}
+.curriculum-filters > span {
+  font-size: 10px;
+  color: var(--muted);
+}
+.curriculum-stage {
+  margin-top: 30px;
+}
+.lesson-mode-label {
+  display: block;
+  font-size: 8px;
+  margin-top: 7px;
+  color: #9aa48c;
+}
+.curriculum-row > div {
+  min-width: 0;
+}
+.fundamentals-tabs {
+  margin-bottom: 20px;
+}
+.concept-search {
+  max-width: 300px;
+  margin-bottom: 18px;
+}
+.concept-search input {
+  width: 100%;
+  font-size: 11px;
+}
+.concept-nav {
+  max-height: 650px;
+  overflow-y: auto;
+}
+.glossary-intro {
+  font-size: 12px;
+  margin-bottom: 22px;
+}
+.glossary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.glossary-grid article {
+  padding: 24px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  min-width: 0;
+}
+.glossary-grid h2 {
+  font-size: 17px;
+  letter-spacing: -0.3px;
+  margin-bottom: 12px;
+}
+.glossary-grid article > p {
+  font-size: 12px;
+  line-height: 1.9;
+}
+.glossary-grid article > div {
+  border-top: 1px solid var(--line);
+  margin-top: 16px;
+  padding-top: 13px;
+}
+.glossary-grid strong {
+  font-size: 10px;
+  color: #ac9979;
+}
+.glossary-grid article > div p {
+  font-size: 11px;
+  margin-top: 6px;
+  overflow-wrap: anywhere;
+}
+.repository-right {
+  min-width: 0;
+}
+.repository-layout > .lesson-panel {
+  min-width: 0;
+}
+.lab-task-steps {
+  padding-left: 17px;
+  margin: 13px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.9;
+}
+.lab-task-steps li + li {
+  margin-top: 12px;
+}
+.expected-behavior {
+  background: var(--soft);
+  border: 1px solid var(--line);
+  padding: 15px;
+  border-radius: 6px;
+  margin-top: 20px;
+}
+.expected-behavior strong {
+  font-size: 11px;
+}
+.expected-behavior p {
+  font-size: 11px;
+  margin-top: 7px;
+}
+.lab-hint {
+  border: 1px solid var(--line);
+  padding: 14px;
+  border-radius: 6px;
+  margin-top: 20px;
+}
+.lab-hint summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: #ac976b;
+  font-size: 11px;
+}
+.lab-hint p,
+.worked-note {
+  font-size: 11px;
+  margin-top: 14px;
+  line-height: 1.9;
+}
+.source-file-tabs {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-top: 22px;
+}
+.source-file-tabs button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 9px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.source-file-tabs button.active {
+  background: var(--peach);
+  color: #b1835f;
+}
+.repository-run-command {
+  padding: 19px;
+  background: var(--soft);
+}
+.repository-run-command > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+}
+.repository-run-command > code {
+  display: block;
+  font-size: 11px;
+  line-height: 1.9;
+  overflow-wrap: anywhere;
+  padding: 15px 0;
+  color: #a8906e;
+}
+.repository-run-command > p {
+  font-size: 10px;
+  margin-top: 12px;
+}
+.repository-reflection {
+  padding: 24px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 8px;
+  margin-top: 20px;
+}
+.repository-reflection h3 {
+  font-size: 15px;
+  line-height: 1.6;
+}
+.repository-reflection > p {
+  margin-top: 15px;
+  line-height: 1.8;
+}
+.project-evidence {
+  border-top: 1px solid var(--line);
+  margin-top: 23px;
+  padding-top: 23px;
+}
+.project-evidence > p {
+  font-size: 11px;
+  margin: 10px 0 20px;
+}
+.project-evidence > label {
+  display: flex;
+  gap: 9px;
+  font-size: 11px;
+  line-height: 1.8;
+  margin-bottom: 14px;
+  color: var(--muted);
+  align-items: flex-start;
+}
+.project-evidence input {
+  margin-top: 4px;
+  accent-color: var(--accent);
+  flex-shrink: 0;
+}
+.project-evidence > .button {
+  margin: 10px 7px 0 0;
+}
+.copy-status {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  z-index: 75;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 7px 30px #27381c17;
+  padding: 15px;
+  max-width: calc(100vw - 40px);
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.copy-status > svg {
+  color: #87a171;
+}
+.copy-status > button {
+  margin-left: 8px;
+  font-size: 18px;
+}
+.repository-reflection .quiz-options > button {
+  text-align: left;
+  line-height: 1.7;
+}
+.repository-layout .editor-title > span {
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.repository-layout .editor-title {
+  height: auto;
+  min-height: 50px;
+}
+@media (max-width: 700px) {
+  .glossary-grid {
+    grid-template-columns: 1fr;
+  }
+  .repository-mode-note {
+    padding: 16px;
+  }
+  .repository-mode-note p {
+    font-size: 10px;
+  }
+  .repository-reflection {
+    padding: 20px;
+  }
+  .curriculum-stage .section-heading > div {
+    min-width: 0;
+  }
+  .curriculum-stage .section-heading > span {
+    font-size: 8px;
+  }
+  .study-plan-note {
+    padding: 17px;
+  }
+  .study-plan-note p {
+    font-size: 10px;
+  }
+  .repository-layout .lesson-panel-content {
+    padding: 22px 18px;
+  }
+  .repository-layout .lesson-panel-content h2 {
+    font-size: 20px;
+  }
+  .lesson-mode-label {
+    font-size: 7px;
+  }
+  .glossary-grid article {
+    padding: 21px;
+  }
+}

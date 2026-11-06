@@ -29,6 +29,7 @@ import { Dashboard, LearningPaths, BugHunting } from '@/components/features/dash
 import { Fundamentals } from '@/components/features/fundamentals';
 import { ToolExplorer } from '@/components/features/tools';
 import { Playground } from '@/components/features/playground';
+import { RepositoryLab } from '@/components/features/repository-lab';
 import { Landing } from '@/components/features/landing';
 import { Dialog } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -354,16 +355,27 @@ export default function TestLab() {
           )}
           {view === 'tools' && <ToolExplorer navigate={navigate} />}
           {view === 'bugs' && <BugHunting progress={progress} navigate={navigate} />}
-          {view === 'playground' && loaded && (
-            <Playground
-              key={lesson.id}
-              lesson={lesson}
-              progress={progress}
-              navigate={navigate}
-              complete={complete}
-              saveDraft={saveDraft}
-            />
-          )}
+          {view === 'playground' &&
+            loaded &&
+            (lesson.repository ? (
+              <RepositoryLab
+                key={lesson.id}
+                lesson={lesson}
+                progress={progress}
+                navigate={navigate}
+                complete={complete}
+                saveDraft={saveDraft}
+              />
+            ) : (
+              <Playground
+                key={lesson.id}
+                lesson={lesson}
+                progress={progress}
+                navigate={navigate}
+                complete={complete}
+                saveDraft={saveDraft}
+              />
+            ))}
           {view === 'about' && <Landing navigate={navigate} progress={progress} />}
         </main>
       </div>
@@ -473,7 +485,12 @@ export default function TestLab() {
                 <span>
                   <strong>{a.title}</strong>
                   <small>
-                    {a.kind === 'concept' ? 'Knowledge check completed' : 'Challenge completed'} ·{' '}
+                    {a.kind === 'concept'
+                      ? 'Knowledge check completed'
+                      : lessons.find((l) => l.title === a.title)?.repository
+                        ? 'Project practice recorded (self-reported)'
+                        : 'Challenge completed'}{' '}
+                    ·{' '}
                     {new Date(a.date).toLocaleDateString(undefined, {
                       month: 'short',
                       day: 'numeric',

@@ -1,4 +1,5 @@
 'use client';
+import { useState } from 'react';
 import {
   ArrowUpRight,
   ArrowRight,
@@ -21,40 +22,31 @@ import {
 import { lessons, concepts } from '@/lib/content';
 import { type Progress, type Navigate } from '@/lib/progress';
 import { Button } from '@/components/ui/button';
+import { coursePaths, stages } from '@/lib/curriculum/stages';
 
-export function PathCards({ progress, navigate }: { progress: Progress; navigate: Navigate }) {
-  const paths = [
-    {
-      name: 'Testing fundamentals',
-      description: 'Build a solid foundation. Learn the what, why, and how of testing.',
-      icon: BookOpen,
-      color: 'orange',
-      ids: concepts.map((_, i) => `concept-${i}`),
-      meta: '10 concepts',
-      level: 'Beginner',
-      view: 'fundamentals' as const,
-    },
-    {
-      name: 'Unit testing with Vitest',
-      description: 'Write your first tests and turn small functions into reliable code.',
-      icon: FlaskConical,
-      color: 'purple',
-      ids: lessons.filter((l) => l.category === 'Unit testing').map((l) => l.id),
-      meta: '3 hands-on lessons',
-      level: 'Beginner',
-      view: 'playground' as const,
-    },
-    {
-      name: 'Integration testing',
-      description: 'Connect the dots. Make sure your application works together.',
-      icon: Layers3,
-      color: 'teal',
-      ids: ['integration'],
-      meta: '1 hands-on lesson',
-      level: 'Intermediate',
-      view: 'playground' as const,
-    },
-  ];
+export function PathCards({
+  progress,
+  navigate,
+  all = false,
+}: {
+  progress: Progress;
+  navigate: Navigate;
+  all?: boolean;
+}) {
+  const paths = coursePaths()
+    .slice(0, all ? undefined : 3)
+    .map((path) => ({
+      ...path,
+      name: path.title,
+      icon:
+        path.view === 'fundamentals'
+          ? BookOpen
+          : path.id === 'start' || path.id === 'unit'
+            ? FlaskConical
+            : Layers3,
+      meta: `${path.ids.length} ${path.view === 'fundamentals' ? 'concepts' : 'lessons'}`,
+      level: path.difficulty,
+    }));
   return (
     <div className="path-grid">
       {paths.map((path) => {
@@ -93,7 +85,7 @@ export function PathCards({ progress, navigate }: { progress: Progress; navigate
               </span>
               <span>
                 <Clock3 size={13} />
-                {path.view === 'fundamentals' ? '25' : path.color === 'purple' ? '30' : '14'} min
+                {path.minutes} min
               </span>
             </div>
             <div className="progress-track">
@@ -359,46 +351,133 @@ function Stat({
 }
 
 export function LearningPaths({ progress, navigate }: { progress: Progress; navigate: Navigate }) {
+  const [search, setSearch] = useState('');
+  const [difficulty, setDifficulty] = useState('All levels');
+  const filtered = lessons.filter(
+    (l) =>
+      (difficulty === 'All levels' || l.difficulty === difficulty) &&
+      `${l.title} ${l.category} ${l.description}`.toLowerCase().includes(search.toLowerCase()),
+  );
   return (
     <div className="page-enter">
       <div className="page-heading">
         <div>
           <div className="eyebrow">YOUR NEXT CHAPTER</div>
-          <h1>Build confidence, step by step.</h1>
-          <p>Start with the fundamentals, then learn by writing real tests.</p>
+          <h1>Your beginner-to-advanced study plan.</h1>
+          <p>
+            {lessons.length} practical lessons, {concepts.length} concepts, and one real
+            application. Follow the stages at your own pace.
+          </p>
         </div>
       </div>
-      <PathCards progress={progress} navigate={navigate} />
+      <div className="study-plan-note">
+        <BookOpen size={20} />
+        <div>
+          <strong>For your first pass</strong>
+          <p>
+            Read the first few fundamentals, then finish “Start small.” Aim for one lesson per
+            session. Write the test yourself, make it fail deliberately, fix it, and explain the
+            result before moving on. Later stages use the included practice-project folder.
+          </p>
+        </div>
+      </div>
+      <PathCards progress={progress} navigate={navigate} all />
       <div className="section-heading spaced">
         <div>
           <h2>The full curriculum</h2>
-          <p>No locked lessons. Follow your curiosity.</p>
+          <p>
+            Suggested order, no locked lessons. In-browser exercises check assertions; real-project
+            labs record self-reported practice.
+          </p>
         </div>
       </div>
-      <div className="curriculum">
-        {lessons.map((l, i) => (
-          <button
-            className="curriculum-row"
-            key={l.id}
-            onClick={() => navigate('playground', l.id)}
-          >
-            <span className="lesson-number">
-              {progress.completed.includes(l.id) ? (
-                <Check size={18} />
-              ) : (
-                String(i + 1).padStart(2, '0')
-              )}
-            </span>
-            <div>
-              <h3>{l.title}</h3>
-              <p>{l.description}</p>
-            </div>
-            <span className="badge">{l.category}</span>
-            <span className="muted">{l.minutes} min</span>
-            <ArrowRight size={17} />
-          </button>
-        ))}
+      <div className="curriculum-filters">
+        <label className="search-field">
+          <input
+            aria-label="Search curriculum"
+            placeholder="Search a topic or test type..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </label>
+        <select
+          aria-label="Filter by difficulty"
+          value={difficulty}
+          onChange={(e) => setDifficulty(e.target.value)}
+        >
+          {['All levels', 'Beginner', 'Intermediate', 'Advanced'].map((level) => (
+            <option key={level}>{level}</option>
+          ))}
+        </select>
+        <span>{filtered.length} lessons</span>
       </div>
+      {stages.map((stage) => {
+        const group = filtered.filter((l) => l.stage === stage.id);
+        if (!group.length) return null;
+        return (
+          <section className="curriculum-stage" key={stage.id}>
+            <div className="section-heading">
+              <div>
+                <span className="eyebrow">
+                  STAGE {stages.findIndex((s) => s.id === stage.id) + 1} ·{' '}
+                  {stage.difficulty.toUpperCase()}
+                </span>
+                <h2>{stage.title}</h2>
+                <p>{stage.description}</p>
+              </div>
+              <span className="badge">
+                {group.filter((l) => progress.completed.includes(l.id)).length} / {group.length}{' '}
+                complete
+              </span>
+            </div>
+            <div className="curriculum">
+              {group.map((l) => (
+                <button
+                  className="curriculum-row"
+                  key={l.id}
+                  onClick={() => navigate('playground', l.id)}
+                >
+                  <span className="lesson-number">
+                    {progress.completed.includes(l.id) ? (
+                      <Check size={18} />
+                    ) : (
+                      String(lessons.findIndex((lesson) => lesson.id === l.id) + 1).padStart(2, '0')
+                    )}
+                  </span>
+                  <div>
+                    <h3>{l.title}</h3>
+                    <p>{l.description}</p>
+                    <span className="lesson-mode-label">
+                      {l.repository
+                        ? 'Run in your project · self-reported completion'
+                        : 'Run in TestLab · assertions verified'}{' '}
+                      · {l.difficulty}
+                    </span>
+                  </div>
+                  <span className="badge">{l.category}</span>
+                  <span className="muted">{l.minutes} min</span>
+                  <ArrowRight size={17} />
+                </button>
+              ))}
+            </div>
+          </section>
+        );
+      })}
+      {!filtered.length && (
+        <div className="empty-state">
+          <h3>No matching lessons</h3>
+          <p>Try another search or choose all difficulty levels.</p>
+          <Button
+            variant="outline"
+            onClick={() => {
+              setSearch('');
+              setDifficulty('All levels');
+            }}
+          >
+            Clear filters
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
