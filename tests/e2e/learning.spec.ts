@@ -63,3 +63,14 @@ test('mobile navigation and learning screens fit the viewport', async ({ page })
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
   await page.screenshot({ path: 'test-results/playground-mobile.png', fullPage: true });
 });
+test('Monaco loads from local assets and unrelated assertions do not complete a lesson', async ({ page }) => {
+  await page.goto('/?view=playground&lesson=first-test');
+  await expect(page.locator('.monaco-editor').first()).toBeVisible();
+  await page.screenshot({ path: 'test-results/monaco-editor.png', fullPage: true });
+  await page.getByRole('button', { name: 'Simple editor', exact: true }).click();
+  await page.getByRole('textbox', { name: 'Test code editor' }).fill("import { it, expect } from 'vitest';\nit('an unrelated truth', () => { expect(true).toBe(true); });");
+  await page.getByRole('button', { name: 'Run test', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Passing — now cover the objective.' })).toBeVisible();
+  await expect(page.locator('.result-explanation')).toContainText('not fully covered');
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('testlab-progress-v1')!).completed)).toEqual([]);
+});
