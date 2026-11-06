@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "prisma generate && next build",
+    "dev": "node scripts/setup-monaco.mjs && next dev",
+    "build": "prisma generate && node scripts/setup-monaco.mjs && next build",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
@@ -13,7 +13,8 @@
     "format": "prettier --write src runner tests *.ts *.mts *.mjs *.json README.md",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
-    "runner:start": "node runner/service.mjs"
+    "runner:start": "node runner/service.mjs",
+    "postinstall": "prisma generate && node scripts/setup-monaco.mjs"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",

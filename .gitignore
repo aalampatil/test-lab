@@ -36,6 +36,7 @@ yarn-error.log*
 /src/generated/
 /playwright-report/
 /test-results/
+/public/monaco/
 
 # vercel
 .vercel
