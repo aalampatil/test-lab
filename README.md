@@ -2,6 +2,8 @@
 
 **Learn to test real applications, one bug at a time.**
 
+> **DEV ONLY — personal learning build. Not ready for a public production release.** See [production readiness](docs/production-readiness.md) for implemented configuration, missing features/infrastructure, and required verification. A successful production build does not change this status.
+
 A Next.js learning application with short lessons, a Monaco playground, structured test feedback, mutation-based challenge validation, and persistent progress. Local mode needs no account, database, API key, Docker, or external service.
 
 ## Start locally

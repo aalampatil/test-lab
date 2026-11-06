@@ -2,6 +2,8 @@
 
 This is a personal learning application first. The following work belongs to a later public release, not a prerequisite for beginning the course.
 
+**Current status: DEV ONLY.** Read [production-readiness.md](production-readiness.md) for the configuration inventory and the difference between missing implementation and infrastructure that has not been verified.
+
 ## Content and learning
 
 - Review explanations with beginner learners and test that they can follow every path from a fresh clone.
