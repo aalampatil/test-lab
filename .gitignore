@@ -44,3 +44,4 @@ test-results/
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+practice-project/.verification/
