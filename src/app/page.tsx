@@ -1,2 +1,4 @@
-import TestLab from "@/components/test-lab";
-export default function Home() { return <TestLab />; }
+import TestLab from '@/components/test-lab';
+export default function Home() {
+  return <TestLab />;
+}
