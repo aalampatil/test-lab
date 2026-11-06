@@ -14,6 +14,14 @@ export async function POST(request: Request) {
       );
     if (!lessons.some((l) => l.id === parsed.data.lessonId))
       return Response.json({ error: 'Lesson not found.' }, { status: 404 });
+    if (lessons.find((l) => l.id === parsed.data.lessonId)?.repository)
+      return Response.json(
+        {
+          error:
+            'This is a real-project lab. Run its command in practice-project; TestLab does not simulate browser or API execution.',
+        },
+        { status: 409 },
+      );
     const local = runLocal(parsed.data.lessonId, parsed.data.code);
     if (!process.env.RUNNER_URL) return Response.json(local);
     if (!process.env.RUNNER_TOKEN)

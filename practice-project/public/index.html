@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TaskBoard · testing practice</title>
+<style>body{font:16px system-ui;color:#26372b;background:#f7f7f1;margin:0;padding:40px 20px}main{max-width:600px;margin:auto}h1{font-size:32px}label{display:block;margin:20px 0 8px}input{font:inherit;padding:12px;border:1px solid #6a7868;border-radius:5px;width:65%}button{font:inherit;background:#315c40;color:white;border:0;padding:13px;border-radius:5px;cursor:pointer}li{padding:15px 0;border-bottom:1px solid #c5cec0}p{line-height:1.7}#error{color:#9a2424}:focus-visible{outline:3px solid #aa531c;outline-offset:3px}</style></head>
+<body><main><h1>TaskBoard</h1><p>Your small application for learning to test.</p><form id="task-form"><label for="title">Task title</label><input id="title" name="title" required><button>Add task</button></form><p id="error" role="alert"></p><p id="status" role="status"></p><ul id="tasks" aria-label="Tasks"></ul></main>
+<script>
+async function refresh() {
+  const response = await fetch('/api/tasks'); const tasks = await response.json();
+  document.querySelector('#tasks').replaceChildren(...tasks.map(task => { const li = document.createElement('li'); li.textContent = task.title; return li; }));
+}
+document.querySelector('#task-form').addEventListener('submit', async event => {
+  event.preventDefault(); const input = document.querySelector('#title');
+  const response = await fetch('/api/tasks', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer practice-token' }, body: JSON.stringify({ title: input.value }) });
+  if (!response.ok) { document.querySelector('#error').textContent = 'Could not save task'; return; }
+  input.value = ''; document.querySelector('#error').textContent = ''; document.querySelector('#status').textContent = 'Task added'; await refresh();
+});
+refresh();
+</script></body></html>

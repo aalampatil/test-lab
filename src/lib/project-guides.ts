@@ -78,9 +78,10 @@ const examples: Record<string, ProjectExample> = {
 };
 
 export function projectGuide(lesson: Lesson, language: 'js' | 'ts') {
-  const example = examples[lesson.id];
+  const example = lesson.projectExample ?? examples[lesson.id];
   if (!example) throw Error(`No project guide for ${lesson.id}`);
   let source = lesson.source;
+  if (language === 'ts' && lesson.projectExample) source = lesson.projectExample.typedSource;
   if (language === 'ts')
     source = source
       .replace('add(a, b)', 'add(a: number, b: number)')

@@ -1,16 +1,8 @@
-export type Lesson = {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  minutes: number;
-  objective: string;
-  explanation: string;
-  source: string;
-  starter: string;
-  hint: string;
-};
-export const lessons: Lesson[] = [
+import type { Lesson } from './curriculum/types';
+import { interactiveLessons } from './curriculum/interactive-lessons';
+import { repositoryLessons } from './curriculum/repository-lessons';
+export type { Lesson } from './curriculum/types';
+const foundationLessons: Lesson[] = [
   {
     id: 'first-test',
     title: 'Your first passing test',
@@ -99,6 +91,24 @@ export const lessons: Lesson[] = [
     hint: 'Use two assertions: canRegister(18) is true, and canRegister(17) is false.',
   },
 ];
+const foundationOrder: Record<string, number> = {
+  'first-test': 10,
+  'edge-cases': 30,
+  'test-arrays': 40,
+  integration: 400,
+  'bug-discount': 180,
+  'bug-validation': 170,
+};
+export const lessons: Lesson[] = [
+  ...foundationLessons.map((l) => ({
+    ...l,
+    order: foundationOrder[l.id],
+    stage: l.id === 'integration' ? 'services' : l.category === 'Bug hunting' ? 'unit' : 'start',
+    difficulty: (l.id === 'integration' ? 'Intermediate' : 'Beginner') as Lesson['difficulty'],
+  })),
+  ...interactiveLessons,
+  ...repositoryLessons,
+].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 export const concepts = [
   {
     title: 'What is software testing?',

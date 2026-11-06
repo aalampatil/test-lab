@@ -1,4 +1,9 @@
 import ts from 'typescript';
+import {
+  additionalSubjects,
+  additionalSubjectNames,
+  additionalObjective,
+} from './additional-subjects';
 
 export type Assertion = {
   name: string;
@@ -51,6 +56,7 @@ export function runLocal(lessonId: string, code: string): RunResult {
     const assertedInputs: Input[] = [];
     const origins = new WeakMap<Map<string, Value>, Map<string, Input[]>>();
     const functions: Record<string, (...args: unknown[]) => unknown> = {
+      ...additionalSubjects(mutation),
       add: (a, b) =>
         mutation === 1 ? Number(a) - Number(b) : Number(a) + Number(b) + (mutation === 2 ? 1 : 0),
       hasFreeShipping: (a) =>
@@ -77,16 +83,19 @@ export function runLocal(lessonId: string, code: string): RunResult {
       canRegister: (a) =>
         mutation === 1 ? Number(a) > 18 : mutation === 2 ? Number(a) >= 17 : Number(a) >= 18,
     };
-    const subject = (
-      {
-        'first-test': 'add',
-        'edge-cases': 'hasFreeShipping',
-        'test-arrays': 'cartTotal',
-        integration: 'checkout',
-        'bug-discount': 'applyDiscount',
-        'bug-validation': 'canRegister',
-      } as Record<string, string>
-    )[lessonId];
+    const subject =
+      (
+        {
+          'first-test': 'add',
+          'edge-cases': 'hasFreeShipping',
+          'test-arrays': 'cartTotal',
+          integration: 'checkout',
+          'bug-discount': 'applyDiscount',
+          'bug-validation': 'canRegister',
+        } as Record<string, string>
+      )[lessonId] ?? additionalSubjectNames[lessonId];
+    if (!subject)
+      throw Error('This lesson runs in the practice project. Follow its repository instructions.');
     const exec = (node: ts.Node, scope: Map<string, Value>): Value => {
       if (++calls > 5000)
         throw Error('This exercise is limited to 5,000 syntax steps. Keep your test small.');
@@ -133,6 +142,8 @@ export function runLocal(lessonId: string, code: string): RunResult {
       }
       if (ts.isParenthesizedExpression(node) || ts.isAsExpression(node))
         return exec(node.expression, scope);
+      if (ts.isArrowFunction(node) || ts.isFunctionExpression(node))
+        return () => exec(node.body, new Map(scope));
       if (ts.isArrayLiteralExpression(node)) return node.elements.map((e) => exec(e, scope));
       if (ts.isObjectLiteralExpression(node))
         return Object.fromEntries(
@@ -200,7 +211,23 @@ export function runLocal(lessonId: string, code: string): RunResult {
             passed = deepEqual(actual, expected);
           else if (matcher === 'toBeTruthy') passed = !!actual;
           else if (matcher === 'toBeFalsy') passed = !actual;
-          else if (matcher === 'toBeGreaterThan') passed = Number(actual) > Number(expected);
+          else if (matcher === 'toThrow') {
+            if (typeof actual !== 'function')
+              throw Error(
+                'Wrap the application call in a function: expect(() => divide(8, 0)).toThrow(...).',
+              );
+            let thrown: unknown;
+            try {
+              actual();
+            } catch (error) {
+              thrown = error;
+            }
+            passed =
+              thrown instanceof Error &&
+              (expected === undefined || thrown.message.includes(String(expected)));
+            // The application call occurs inside the callback, after the matcher starts.
+            assertedInputs.push(...new Set(inputs.slice(offset)));
+          } else if (matcher === 'toBeGreaterThan') passed = Number(actual) > Number(expected);
           else if (matcher === 'toBeLessThan') passed = Number(actual) < Number(expected);
           else if (matcher === 'toBeCloseTo')
             passed =
@@ -226,15 +253,12 @@ export function runLocal(lessonId: string, code: string): RunResult {
   };
   const baseline = evaluate(0);
   const allPassed = baseline.assertions.length > 0 && baseline.assertions.every((a) => a.passed);
-  const count = [
-    'first-test',
-    'edge-cases',
-    'test-arrays',
-    'integration',
-    'bug-validation',
-  ].includes(lessonId)
-    ? 2
-    : 1;
+  const count =
+    ['first-test', 'edge-cases', 'test-arrays', 'integration', 'bug-validation'].includes(
+      lessonId,
+    ) || Object.hasOwn(additionalSubjectNames, lessonId)
+      ? 2
+      : 1;
   let mutationsCaught = 0;
   if (allPassed)
     for (let m = 1; m <= count; m++) {
@@ -246,7 +270,8 @@ export function runLocal(lessonId: string, code: string): RunResult {
     }
   const args = baseline.inputs.map((i) => i.args);
   const objectiveMet =
-    lessonId === 'edge-cases'
+    additionalObjective(lessonId, args) ??
+    (lessonId === 'edge-cases'
       ? args.some((a) => a[0] === 50) && args.some((a) => Number(a[0]) < 50)
       : lessonId === 'test-arrays'
         ? args.some((a) => Array.isArray(a[0]) && a[0].length > 1) &&
@@ -256,7 +281,7 @@ export function runLocal(lessonId: string, code: string): RunResult {
             args.some((a) => a[1] === 0)
           : lessonId === 'bug-validation'
             ? args.some((a) => a[0] === 18) && args.some((a) => a[0] === 17)
-            : args.length > 0;
+            : args.length > 0);
   const complete = allPassed && mutationsCaught === count && objectiveMet;
   return {
     assertions: baseline.assertions,
