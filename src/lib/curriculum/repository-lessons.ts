@@ -774,7 +774,7 @@ export const repositoryLessons: Lesson[] = [
       'Introduce a failing assertion on a branch, verify the workflow reports failure when you push it, then fix the assertion. TestLab does not push or create workflows on your behalf.',
     ],
     solution:
-      "name: TaskBoard checks\non: [push, pull_request]\njobs:\n  test:\n    runs-on: ubuntu-latest\n    defaults:\n      run:\n        working-directory: practice-project\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: '22'\n          cache: npm\n          cache-dependency-path: practice-project/package-lock.json\n      - run: npm ci\n      - run: npm test\n      - run: npm run typecheck\n",
+      "name: TaskBoard checks\non: [push, pull_request]\njobs:\n  test:\n    runs-on: ubuntu-latest\n    defaults:\n      run:\n        working-directory: practice-project\n    steps:\n      - uses: actions/checkout@v7\n      - uses: actions/setup-node@v7\n        with:\n          node-version: '22'\n          cache: npm\n          cache-dependency-path: practice-project/package-lock.json\n      - run: npm ci\n      - run: npm test\n      - run: npm run typecheck\n",
     expected:
       'Local commands pass. A CI run is only verified after you add the workflow to your own GitHub repository and observe a run.',
     hint: 'npm ci needs a committed lockfile. Do not add || true to a failing test command.',
