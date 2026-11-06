@@ -10,6 +10,7 @@ import {
   Code2,
   FileCode2,
   FlaskConical,
+  FolderTree,
   Lightbulb,
   LoaderCircle,
   Play,
@@ -22,6 +23,7 @@ import { lessons, type Lesson } from '@/lib/content';
 import { type Progress, type Navigate } from '@/lib/progress';
 import type { RunResult } from '@/lib/testing/local-runner';
 import { Button } from '@/components/ui/button';
+import { ProjectGuide } from './project-guide';
 const Editor = dynamic(() => import('@/components/ui/code-editor'), { ssr: false });
 
 export function Playground({
@@ -43,7 +45,7 @@ export function Playground({
   const [error, setError] = useState('');
   const [hint, setHint] = useState(false);
   const [simple, setSimple] = useState(false);
-  const [tab, setTab] = useState<'lesson' | 'syntax'>('lesson');
+  const [tab, setTab] = useState<'lesson' | 'syntax' | 'project'>('lesson');
   const requestRef = useRef(0);
   const startedAt = useRef(0);
   useEffect(() => {
@@ -147,6 +149,10 @@ export function Playground({
               <Code2 size={15} />
               Syntax explained
             </button>
+            <button className={tab === 'project' ? 'active' : ''} onClick={() => setTab('project')}>
+              <FolderTree size={15} />
+              Your project
+            </button>
           </div>
           <div className="lesson-panel-content">
             {tab === 'lesson' ? (
@@ -190,6 +196,8 @@ export function Playground({
                   </p>
                 </div>
               </>
+            ) : tab === 'project' ? (
+              <ProjectGuide lesson={lesson} />
             ) : (
               <>
                 <span className="eyebrow">EVERY LINE HAS A JOB</span>
