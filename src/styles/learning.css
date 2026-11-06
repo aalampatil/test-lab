@@ -756,6 +756,11 @@
 .assertion dt {
   color: #aa9e8b;
 }
+.assertion-error {
+  font-size: 10px;
+  line-height: 1.7;
+  margin: 10px 0 0;
+}
 .engine-label {
   display: block;
   font-size: 8px;
