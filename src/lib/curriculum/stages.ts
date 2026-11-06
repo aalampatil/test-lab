@@ -59,7 +59,7 @@ export function coursePaths() {
       difficulty: 'Beginner',
       color: 'orange',
       ids: concepts.map((_, i) => `concept-${i}`),
-      minutes: 30,
+      minutes: concepts.length * 3,
       view: 'fundamentals' as const,
     },
     ...stages.map((stage) => ({
