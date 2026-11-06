@@ -1,0 +1,16 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Anonymous browser session. Add an identity provider before cross-device accounts.
+model Learner {
+  id        String   @id @db.Uuid
+  progress  Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
