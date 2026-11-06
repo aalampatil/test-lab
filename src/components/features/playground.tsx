@@ -1,5 +1,5 @@
 'use client';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import {
   ArrowLeft,
@@ -22,7 +22,7 @@ import { lessons, type Lesson } from '@/lib/content';
 import { type Progress, type Navigate } from '@/lib/progress';
 import type { RunResult } from '@/lib/local-runner';
 import { Button } from '@/components/ui/button';
-const Editor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
+const Editor = dynamic(() => import('@/components/ui/code-editor'), { ssr: false });
 
 export function Playground({
   lesson,
@@ -45,7 +45,10 @@ export function Playground({
   const [simple, setSimple] = useState(false);
   const [tab, setTab] = useState<'lesson' | 'syntax'>('lesson');
   const requestRef = useRef(0);
-  const startedAt = useRef(Date.now());
+  const startedAt = useRef(0);
+  useEffect(() => {
+    startedAt.current = Date.now();
+  }, []);
   const update = (value: string) => {
     setCode(value);
     saveDraft(lesson.id, value);
@@ -373,6 +376,7 @@ export function Playground({
                             <dd>{a.actual}</dd>
                           </dl>
                         )}
+                        {a.error && <pre className="assertion-error">{a.error}</pre>}
                       </div>
                     ))}
                   </div>

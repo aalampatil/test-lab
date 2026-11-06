@@ -1,4 +1,4 @@
-export default {
+const config = {
   root: '/submission',
   cacheDir: '/tmp/vitest-cache',
   test: {
@@ -11,3 +11,4 @@ export default {
   },
   resolve: { alias: { vitest: '/runner/node_modules/vitest/dist/index.js' } },
 };
+export default config;

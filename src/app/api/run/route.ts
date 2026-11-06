@@ -52,7 +52,17 @@ export async function POST(request: Request) {
       assertions.every((a: { passed: boolean }) => a.passed);
     return Response.json({
       ...local,
-      assertions: local.assertions,
+      assertions: actualPass
+        ? local.assertions
+        : assertions.length
+          ? assertions
+          : [
+              {
+                name: 'Vitest execution',
+                passed: false,
+                error: 'The isolated runner returned no test results. Check the runner logs.',
+              },
+            ],
       complete: actualPass && local.complete,
       engine: 'Vitest · isolated Docker container',
       explanation: actualPass

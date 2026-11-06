@@ -2,7 +2,7 @@ import http from 'node:http';
 import { spawn } from 'node:child_process';
 import { mkdtemp, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, resolve, sep } from 'node:path';
 import { randomUUID } from 'node:crypto';
 
 // Trusted orchestration service. Keep private; only containers run submitted code.
@@ -101,7 +101,9 @@ http
         });
         cleanup.on('error', () => {});
       }
-      if (directory) await rm(directory, { recursive: true, force: true });
+      if (directory && resolve(directory).startsWith(`${resolve(tmpdir())}${sep}testlab-`)) {
+        await rm(directory, { recursive: true, force: true }).catch(() => {});
+      }
       active--;
     }
   })
