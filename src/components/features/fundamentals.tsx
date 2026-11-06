@@ -1,5 +1,5 @@
 'use client';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ArrowRight, BookOpen, Check, CheckCircle2, ChevronRight, Lightbulb } from 'lucide-react';
 import { concepts } from '@/lib/content';
 import { type Progress, type Navigate } from '@/lib/progress';
@@ -18,12 +18,14 @@ export function Fundamentals({
   const [checked, setChecked] = useState(false);
   const c = concepts[index];
   const correct = selected === c.answer;
-  const startedAt = useRef(Date.now());
+  const startedAt = useRef(0);
+  useEffect(() => {
+    startedAt.current = Date.now();
+  }, [index]);
   const chooseConcept = (i: number) => {
     setIndex(i);
     setSelected(null);
     setChecked(false);
-    startedAt.current = Date.now();
   };
   return (
     <div className="page-enter">
@@ -114,7 +116,13 @@ export function Fundamentals({
                 disabled={selected === null}
                 onClick={() => {
                   setChecked(true);
-                  if (correct) complete(`concept-${index}`, c.title, 3, 'concept');
+                  if (correct)
+                    complete(
+                      `concept-${index}`,
+                      c.title,
+                      Math.max(1, Math.round((Date.now() - startedAt.current) / 60000)),
+                      'concept',
+                    );
                 }}
               >
                 Check my answer

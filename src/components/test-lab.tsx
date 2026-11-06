@@ -54,16 +54,21 @@ export default function TestLab() {
   const [name, setName] = useState('');
   const [databaseMode, setDatabaseMode] = useState(false);
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem('testlab-progress-v1');
-      if (saved) {
-        const parsed = progressSchema.safeParse(JSON.parse(saved));
-        if (parsed.success) setProgress(parsed.data);
+    // Hydrate browser-owned state after the server-rendered first paint.
+    const frame = requestAnimationFrame(() => {
+      try {
+        const saved = localStorage.getItem('testlab-progress-v1');
+        if (saved) {
+          const parsed = progressSchema.safeParse(JSON.parse(saved));
+          if (parsed.success) setProgress(parsed.data);
+        }
+        setDark(localStorage.getItem('testlab-theme') === 'dark');
+      } catch {
+        setStorageError(true);
       }
-      setDark(localStorage.getItem('testlab-theme') === 'dark');
-    } catch {
-      setStorageError(true);
-    }
+      syncRoute();
+      setLoaded(true);
+    });
     const syncRoute = () => {
       const params = new URLSearchParams(window.location.search);
       const candidate = params.get('view');
@@ -78,17 +83,18 @@ export default function TestLab() {
       const id = params.get('lesson');
       if (id && lessons.some((l) => l.id === id)) setLessonId(id);
     };
-    syncRoute();
-    setLoaded(true);
     window.addEventListener('popstate', syncRoute);
-    return () => window.removeEventListener('popstate', syncRoute);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener('popstate', syncRoute);
+    };
   }, []);
   useEffect(() => {
     if (loaded)
       try {
         localStorage.setItem('testlab-progress-v1', JSON.stringify(progress));
       } catch {
-        setStorageError(true);
+        queueMicrotask(() => setStorageError(true));
       }
   }, [progress, loaded]);
   useEffect(() => {
@@ -310,7 +316,7 @@ export default function TestLab() {
               aria-label={dark ? 'Switch to light theme' : 'Switch to dark theme'}
               onClick={() => setDark(!dark)}
             >
-              {dark ? <Sun size={18} /> : <Sun size={18} />}
+              {dark ? <Sun size={18} /> : <Moon size={18} />}
             </button>
             <button
               className="icon-button notification-button"

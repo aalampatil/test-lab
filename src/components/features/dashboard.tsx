@@ -11,7 +11,6 @@ import {
   FlaskConical,
   Layers3,
   Lightbulb,
-  Play,
   Route,
   Sparkles,
   Target,
@@ -176,14 +175,14 @@ export function Dashboard({ progress, navigate }: { progress: Progress; navigate
               <div>
                 <b>1</b>
                 <span className="syntax-purple">it</span>(
-                <span className="syntax-green">'you can do this'</span>, () =&gt; {'{'}
+                <span className="syntax-green">{"'you can do this'"}</span>, () =&gt; {'{'}
               </div>
               <div>
                 <b>2</b> <span className="syntax-purple">expect</span>(yourPotential).
                 <span className="syntax-blue">toBe</span>(
               </div>
               <div>
-                <b>3</b> <span className="syntax-orange">'limitless'</span>
+                <b>3</b> <span className="syntax-orange">{"'limitless'"}</span>
               </div>
               <div>
                 <b>4</b> );

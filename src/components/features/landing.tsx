@@ -50,7 +50,7 @@ export function Landing({ navigate, progress }: { navigate: Navigate; progress: 
           <pre>
             <code>
               <span className="syntax-purple">it</span>(
-              <span className="syntax-green">'adds two numbers'</span>, () =&gt; {'{'}
+              <span className="syntax-green">{"'adds two numbers'"}</span>, () =&gt; {'{'}
               {'\n'} <span className="syntax-purple">expect</span>(add(2, 3)).
               <span className="syntax-blue">toBe</span>(5);{'\n'}
               {'}'});
