@@ -6,6 +6,7 @@ TestLab is a personal learning workspace first. Work through small tests in the 
 - [Your study plan](learning-plan.md): progress from your first assertion to a complete testing strategy.
 - [Architecture](architecture.md): folders, execution boundaries, data, and infrastructure.
 - [Testing and verification](testing.md): verify the application and the course examples.
+- [Local verification report](verification-report.md): observed results and unverified infrastructure.
 - [Writing course content](curriculum-authoring.md): add lessons without breaking execution or progress.
 - [Before a public release](release-checklist.md): current limitations and the work to do later.
 

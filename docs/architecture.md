@@ -60,6 +60,8 @@ TaskBoard has its own package.json, lockfile, Vitest config, Playwright config, 
 
 TaskBoard is intentionally local: in-memory data, a fixed teaching token, and a development reset endpoint. It demonstrates test boundaries; it is not infrastructure to expose as a public application.
 
+The React component labs exercise `TaskForm.jsx` as a standalone component. The lightweight HTTP demo serves its own HTML form from `public/index.html`. They illustrate the same feature at different scopes, but the browser tests do not mount that React component. When transferring these patterns to your app, test your actual assembled frontend as well.
+
 ## Assets and infrastructure
 
 Geist fonts and the Monaco bundle are self-hosted. The editor build replaces Monaco’s vendored sanitizer with the patched dependency as well as overriding the package-level dependency. Generated assets are ignored and reproduced during setup/build.

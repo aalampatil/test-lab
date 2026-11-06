@@ -47,3 +47,5 @@ Preserve the order of existing concepts because progress uses append-only indice
 ## Documentation and commits
 
 Update `docs/README.md`, the root README, and the study plan when the course changes materially. Commit content, execution support, interface changes, tests, and minor fixes separately as requested by the project owner.
+
+The CI example follows the official [checkout](https://github.com/actions/checkout#usage) and [setup-node](https://github.com/actions/setup-node#usage) action documentation. Recheck their supported versions and runner requirements when updating the example. A local template review does not verify a hosted workflow run.
