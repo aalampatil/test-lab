@@ -515,6 +515,7 @@ export function BugHunting({ progress, navigate }: { progress: Progress; navigat
       <div className="challenge-grid">
         {lessons
           .filter((l) => l.category === 'Bug hunting')
+          .sort((a, b) => a.id.localeCompare(b.id))
           .map((l, i) => (
             <article className="challenge-card" key={l.id}>
               <div className="path-card-top">
