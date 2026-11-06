@@ -343,6 +343,10 @@ export default function TestLab() {
           id="main-content"
           className={`main-content ${view === 'playground' ? 'lab-main' : ''}`}
         >
+          <div className="development-notice" aria-label="Development status">
+            <span>DEV ONLY</span>
+            <p>Personal learning build. Production setup is incomplete.</p>
+          </div>
           {storageError && (
             <div className="storage-warning" role="status">
               Browser storage is unavailable. Your progress will last for this session only.
