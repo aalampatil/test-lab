@@ -13,7 +13,7 @@ npm run dev
 
 Open http://localhost:3000. The overview is the default workspace. The About TestLab navigation item opens the product introduction; every learning screen is shareable through its URL query parameters, and browser back/forward navigation works.
 
-`npm install` generates the Prisma client and copies Monaco assets into `public/monaco`. Both fonts and the editor are self-hosted. If installation scripts were disabled, run `npm run db:generate` and `node scripts/setup-monaco.mjs` yourself. The simple editor remains usable while Monaco loads, or can be selected explicitly.
+`npm install` generates the Prisma client and builds Monaco assets into `public/monaco`. Both fonts and the editor are self-hosted. If installation scripts were disabled, run `npm run db:generate` and `node scripts/setup-monaco.mjs` yourself. The simple editor remains usable while Monaco loads, or can be selected explicitly.
 
 ## What works
 
