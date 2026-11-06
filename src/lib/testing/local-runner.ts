@@ -16,6 +16,18 @@ export type RunResult = {
 };
 type Value = unknown;
 const show = (v: unknown) => JSON.stringify(v) ?? String(v);
+function deepEqual(a: unknown, b: unknown): boolean {
+  if (Object.is(a, b)) return true;
+  if (!a || !b || typeof a !== 'object' || typeof b !== 'object') return false;
+  if (Array.isArray(a) !== Array.isArray(b)) return false;
+  const left = a as Record<string, unknown>;
+  const right = b as Record<string, unknown>;
+  const keys = Object.keys(left);
+  return (
+    keys.length === Object.keys(right).length &&
+    keys.every((key) => Object.hasOwn(right, key) && deepEqual(left[key], right[key]))
+  );
+}
 
 // Interpret an allowlisted AST; submitted JavaScript is never eval'd or imported.
 export function runLocal(lessonId: string, code: string): RunResult {
@@ -34,9 +46,13 @@ export function runLocal(lessonId: string, code: string): RunResult {
     const assertions: Assertion[] = [];
     let currentTest = 'Test';
     let calls = 0;
-    const inputs: { name: string; args: unknown[] }[] = [];
+    type Input = { name: string; args: unknown[] };
+    const inputs: Input[] = [];
+    const assertedInputs: Input[] = [];
+    const origins = new WeakMap<Map<string, Value>, Map<string, Input[]>>();
     const functions: Record<string, (...args: unknown[]) => unknown> = {
-      add: (a, b) => (mutation === 1 ? Number(a) - Number(b) : Number(a) + Number(b)),
+      add: (a, b) =>
+        mutation === 1 ? Number(a) - Number(b) : Number(a) + Number(b) + (mutation === 2 ? 1 : 0),
       hasFreeShipping: (a) =>
         mutation === 1 ? Number(a) > 50 : mutation === 2 ? true : Number(a) >= 50,
       cartTotal: (a) => {
@@ -95,7 +111,10 @@ export function runLocal(lessonId: string, code: string): RunResult {
         for (const d of node.declarationList.declarations) {
           if (!ts.isIdentifier(d.name) || !d.initializer)
             throw Error('Use named constants with a value.');
+          const offset = inputs.length;
           scope.set(d.name.text, exec(d.initializer, scope));
+          if (!origins.has(scope)) origins.set(scope, new Map());
+          origins.get(scope)!.set(d.name.text, [...new Set(inputs.slice(offset))]);
         }
         return;
       }
@@ -106,7 +125,10 @@ export function runLocal(lessonId: string, code: string): RunResult {
       if (node.kind === ts.SyntaxKind.NullKeyword) return null;
       if (ts.isIdentifier(node)) {
         if (node.text === 'undefined') return undefined;
-        if (scope.has(node.text)) return scope.get(node.text);
+        if (scope.has(node.text)) {
+          inputs.push(...(origins.get(scope)?.get(node.text) ?? []));
+          return scope.get(node.text);
+        }
         throw Error(`Unknown name: ${node.text}. Import the function from './app'.`);
       }
       if (ts.isParenthesizedExpression(node) || ts.isAsExpression(node))
@@ -139,7 +161,9 @@ export function runLocal(lessonId: string, code: string): RunResult {
               throw Error('Use a callback for describe or it.');
             const previous = currentTest;
             if (name !== 'describe') currentTest = String(exec(node.arguments[0], scope));
-            exec(callback.body, new Map(scope));
+            const nestedScope = new Map(scope);
+            origins.set(nestedScope, new Map(origins.get(scope)));
+            exec(callback.body, nestedScope);
             currentTest = previous;
             return;
           }
@@ -166,12 +190,14 @@ export function runLocal(lessonId: string, code: string): RunResult {
             String(scope.get(target.expression.text) ?? target.expression.text) !== 'expect'
           )
             throw Error('Only expect(...).matcher(...) calls are supported.');
+          const offset = inputs.length;
           const actual = exec(target.arguments[0], scope);
           const expected = node.arguments[0] ? exec(node.arguments[0], scope) : undefined;
+          assertedInputs.push(...new Set(inputs.slice(offset)));
           let passed: boolean;
           if (matcher === 'toBe') passed = Object.is(actual, expected);
           else if (matcher === 'toEqual' || matcher === 'toStrictEqual')
-            passed = show(actual) === show(expected);
+            passed = deepEqual(actual, expected);
           else if (matcher === 'toBeTruthy') passed = !!actual;
           else if (matcher === 'toBeFalsy') passed = !actual;
           else if (matcher === 'toBeGreaterThan') passed = Number(actual) > Number(expected);
@@ -196,11 +222,17 @@ export function runLocal(lessonId: string, code: string): RunResult {
       );
     };
     exec(file, new Map());
-    return { assertions, inputs };
+    return { assertions, inputs: assertedInputs };
   };
   const baseline = evaluate(0);
   const allPassed = baseline.assertions.length > 0 && baseline.assertions.every((a) => a.passed);
-  const count = ['edge-cases', 'test-arrays', 'integration', 'bug-validation'].includes(lessonId)
+  const count = [
+    'first-test',
+    'edge-cases',
+    'test-arrays',
+    'integration',
+    'bug-validation',
+  ].includes(lessonId)
     ? 2
     : 1;
   let mutationsCaught = 0;

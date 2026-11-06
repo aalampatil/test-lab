@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { lessons } from '@/lib/content';
-import { runLocal } from '@/lib/local-runner';
+import { runLocal } from '@/lib/testing/local-runner';
 const submission = z.object({ lessonId: z.string().max(50), code: z.string().min(1).max(15000) });
 export async function POST(request: Request) {
   if (Number(request.headers.get('content-length') ?? 0) > 20000)

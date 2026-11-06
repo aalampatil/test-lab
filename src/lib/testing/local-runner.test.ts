@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { runLocal } from '../local-runner';
+import { runLocal } from './local-runner';
 import { lessons } from '../content';
 const testCode = (body: string) =>
   `import { it, expect } from 'vitest';\nit('checks behavior', () => { ${body} });`;
@@ -18,6 +18,19 @@ describe('local learning runner', () => {
   });
   it('does not award completion for a trivial assertion', () => {
     expect(runLocal('first-test', testCode('expect(true).toBe(true);')).complete).toBe(false);
+  });
+  it('rejects an assertion too broad to check an exact sum', () => {
+    expect(runLocal('first-test', testCode('expect(add(2, 3)).toBeGreaterThan(4);')).complete).toBe(
+      false,
+    );
+  });
+  it('compares object contents regardless of property order', () => {
+    const result = runLocal(
+      'first-test',
+      testCode('expect({ a: 1, b: 2 }).toEqual({ b: 2, a: 1 });'),
+    );
+    expect(result.assertions[0].passed).toBe(true);
+    expect(result.complete).toBe(false);
   });
   it('does not award completion for an unrelated subject call', () => {
     expect(runLocal('first-test', testCode('add(2, 3); expect(5).toBe(5);')).complete).toBe(false);
@@ -52,6 +65,10 @@ describe('local learning runner', () => {
         ),
       ).complete,
     ).toBe(true);
+  });
+  it('requires checking the no-discount result, not merely calling the function', () => {
+    const result = runLocal('integration', testCode('checkout([20, 30], 0); expect(checkout([20, 30], 10)).toBe(45);'));
+    expect(result.complete).toBe(false);
   });
   it('catches the original coupon regression', () => {
     expect(

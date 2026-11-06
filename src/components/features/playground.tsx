@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { lessons, type Lesson } from '@/lib/content';
 import { type Progress, type Navigate } from '@/lib/progress';
-import type { RunResult } from '@/lib/local-runner';
+import type { RunResult } from '@/lib/testing/local-runner';
 import { Button } from '@/components/ui/button';
 const Editor = dynamic(() => import('@/components/ui/code-editor'), { ssr: false });
 
