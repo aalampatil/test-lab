@@ -67,7 +67,10 @@ describe('local learning runner', () => {
     ).toBe(true);
   });
   it('requires checking the no-discount result, not merely calling the function', () => {
-    const result = runLocal('integration', testCode('checkout([20, 30], 0); expect(checkout([20, 30], 10)).toBe(45);'));
+    const result = runLocal(
+      'integration',
+      testCode('checkout([20, 30], 0); expect(checkout([20, 30], 10)).toBe(45);'),
+    );
     expect(result.complete).toBe(false);
   });
   it('catches the original coupon regression', () => {
