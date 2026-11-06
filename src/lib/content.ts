@@ -1,6 +1,7 @@
 import type { Lesson } from './curriculum/types';
 import { interactiveLessons } from './curriculum/interactive-lessons';
 import { repositoryLessons } from './curriculum/repository-lessons';
+import { extendedConcepts, type Concept } from './curriculum/concepts';
 export type { Lesson } from './curriculum/types';
 const foundationLessons: Lesson[] = [
   {
@@ -109,7 +110,7 @@ export const lessons: Lesson[] = [
   ...interactiveLessons,
   ...repositoryLessons,
 ].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-export const concepts = [
+const foundationConcepts: Concept[] = [
   {
     title: 'What is software testing?',
     text: 'Testing compares what your software does with what you expect it to do. For a shopping cart, check that two $10 items total $20. A test is an executable example of a requirement.',
@@ -205,6 +206,7 @@ export const concepts = [
     answer: 0,
   },
 ];
+export const concepts: Concept[] = [...foundationConcepts, ...extendedConcepts];
 export type TestingTool = {
   name: string;
   mark: string;
