@@ -18,8 +18,9 @@ Open http://localhost:3000. The overview is the default workspace. The About Tes
 ## What works
 
 - A dashboard showing real completed lessons, overall progress, learning time rounded to minutes, and solved challenges.
-- Ten testing fundamentals with examples and scored knowledge checks.
-- Six hands-on lessons covering addition, shipping boundaries, cart totals, checkout integration, coupon regression, and age validation.
+- Forty concept lessons with examples and scored knowledge checks, plus fifty searchable glossary terms.
+- Thirty-six practical lessons in seven beginner-to-advanced stages: fourteen in-browser exercises and twenty-two real-project labs.
+- An independent TaskBoard practice project for real async, mock, timer, React, storage, HTTP, contract, security-boundary, browser, accessibility, visual, property, performance, mutation, coverage, type-check, CI, and exploratory exercises.
 - Editable, saved test drafts; reset, hints, a syntax guide, run status, expected/actual results, and beginner-friendly explanations.
 - A “Your project” guide in every exercise: exact repository folders and filenames, JavaScript/TypeScript source and tests, copy buttons, Vitest configuration, npm scripts, run/watch commands, and troubleshooting.
 - Completion checks that require passing assertions, required inputs, and detection of deliberate bugs. `expect(true).toBe(true)` never completes a challenge.
@@ -29,6 +30,8 @@ Open http://localhost:3000. The overview is the default workspace. The About Tes
 Local progress is stored under `testlab-progress-v1` in this browser. It is not an authenticated account and does not sync between devices. Clearing browser data removes the local copy. If browser storage is unavailable, a visible message explains that progress is session-only.
 
 ## Folder structure
+
+Start with [the project documentation](docs/README.md) for setup, your personal study plan, architecture, verification, content authoring, and later release work. The real-project labs save drafts and record explicitly self-reported practice; their tests run in `practice-project/`, not through the browser interpreter.
 
 ```text
 src/
@@ -48,7 +51,8 @@ src/
       landing.tsx            Product introduction
     ui/                      Accessible Radix/shadcn-style primitives and Monaco wrapper
   lib/
-    content.ts               Typed, seeded lessons, concepts, and tool guides
+    content.ts               Public catalog and stable original content
+    curriculum/              Typed stages, expanded lessons, concepts, glossary, starter files
     progress.ts              Versioned progress schema and shared types
     database.ts              Optional Prisma/PostgreSQL connection
     testing/                 Restricted interpreter and regression tests
@@ -61,6 +65,8 @@ prisma/                      PostgreSQL schema
 runner/                      Trusted orchestrator and isolated Vitest container
 scripts/                     Reproducible local asset setup
 tests/e2e/                   Browser learning-flow and mobile tests
+practice-project/            Independent TaskBoard app and your exercise test files
+docs/                        Project documentation and personal study plan
 ```
 
 ## Execution architecture
@@ -139,4 +145,4 @@ npm start
 
 ## MVP boundaries
 
-No fake sign-in, certificates, live coverage reports, or simulated execution for the informational tool guides. This MVP includes local learning and anonymous optional PostgreSQL storage. Authentication, cross-device accounts, real browser/API challenge execution, and a hosted execution fleet require additional implementation and infrastructure. Use the installed Next.js documentation under `node_modules/next/dist/docs/` before changing framework APIs.
+No fake sign-in, certificates, live in-app coverage reports, or simulated execution for the informational tool guides. This MVP includes local learning, real browser/API exercises in the separate practice project, and anonymous optional PostgreSQL storage. Authentication, cross-device accounts, remote verification of project labs, and a hosted execution fleet require additional implementation and infrastructure. Use the installed Next.js documentation under `node_modules/next/dist/docs/` before changing framework APIs.
