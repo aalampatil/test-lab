@@ -61,7 +61,7 @@ for (const lesson of lessons.filter((l) => l.repository?.testPath.startsWith('e2
   );
 await writeFile(
   resolve(root, 'playwright.config.js'),
-  `import { defineConfig } from '@playwright/test';\nexport default defineConfig({ testDir: './e2e', workers: 1, use: { baseURL: 'http://127.0.0.1:3100', channel: 'chrome', headless: true }, webServer: { command: 'node server.js', cwd: ${JSON.stringify(resolve('practice-project'))}, url: 'http://127.0.0.1:3100', reuseExistingServer: false } });`,
+  `import { defineConfig } from '@playwright/test';\nexport default defineConfig({ testDir: './e2e', workers: 1, use: { baseURL: 'http://127.0.0.1:3100', channel: 'chrome', headless: true }, webServer: { command: 'node server.js', cwd: ${JSON.stringify(resolve('practice-project'))}, url: 'http://127.0.0.1:3100', reuseExistingServer: true } });`,
 );
 console.log(
   'Vitest examples passed. Browser fixtures prepared in practice-project/.verification/e2e.',
