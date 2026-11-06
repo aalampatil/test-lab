@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState, useCallback } from 'react';
-import { ArrowRight, ArrowUpRight, Bell, BookOpen, Bug, Check, ChevronDown, CircleHelp, Code2, Command, Compass, FlaskConical, Github, LayoutDashboard, Menu, Moon, PanelLeftClose, Route, Search, Settings2, Sparkles, Sun, Terminal, X } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Bell, BookOpen, Bug, Check, ChevronDown, CircleHelp, Code2, Compass, FlaskConical, LayoutDashboard, Menu, Moon, PanelLeftClose, Route, Search, Settings2, Sparkles, Sun, Terminal } from 'lucide-react';
 import { lessons, concepts } from '@/lib/content';
 import { emptyProgress, progressSchema, type Progress, type View } from '@/lib/progress';
 import { Dashboard, LearningPaths, BugHunting } from '@/components/features/dashboard';
