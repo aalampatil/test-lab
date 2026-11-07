@@ -2,6 +2,7 @@
   "name": "learn-how-to-write-tests",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "dev": "node scripts/setup-monaco.mjs && next dev",
     "build": "prisma generate && node scripts/setup-monaco.mjs && next build",
