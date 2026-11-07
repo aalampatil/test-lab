@@ -148,3 +148,7 @@ npm start
 ## MVP boundaries
 
 No fake sign-in, certificates, live in-app coverage reports, or simulated execution for the informational tool guides. This MVP includes local learning, real browser/API exercises in the separate practice project, and anonymous optional PostgreSQL storage. Authentication, cross-device accounts, remote verification of project labs, and a hosted execution fleet require additional implementation and infrastructure. Use the installed Next.js documentation under `node_modules/next/dist/docs/` before changing framework APIs.
+
+## License
+
+TestLab’s original code, course content, documentation, and practice project are licensed under the [MIT License](LICENSE). Copyright (c) 2026 aalampatil. Third-party code and assets retain their own licenses; see [licensing details](docs/licensing.md). The development-only release status is separate from the license.

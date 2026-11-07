@@ -17,3 +17,7 @@ Only the initial title test is provided as a finished test. Write the other test
 The source uses an in-memory store, a demo token, and a development reset endpoint so you can learn without credentials. It is a local teaching app, not a production authentication or storage system. Data survives a page reload but not a server restart.
 
 See [the study plan](../docs/learning-plan.md), [setup instructions](../docs/getting-started.md), and [verification guide](../docs/testing.md).
+
+## License
+
+Original TaskBoard practice code and examples use the [MIT License](LICENSE), copyright (c) 2026 aalampatil. Third-party dependencies retain their own licenses.

@@ -12,5 +12,6 @@ TestLab is a personal learning workspace first. Work through small tests in the 
 - [Writing course content](curriculum-authoring.md): add lessons without breaking execution or progress.
 - [Before a public release](release-checklist.md): current limitations and the work to do later.
 - [Production readiness and missing configuration](production-readiness.md): current dev-only status, supported environment settings, missing implementation, and required production evidence.
+- [Licensing](licensing.md): MIT coverage, package metadata, and third-party notices.
 
 Current course: **36 practical lessons**, **40 concept checks**, and **50 glossary terms**. Fourteen exercises run through TestLab’s restricted interpreter. Twenty-two guided labs run with real tools in `practice-project/` and use explicitly self-reported completion.
