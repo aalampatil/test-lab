@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import '@clerk/ui/themes/shadcn.css';
 @import '../styles/workspace.css';
 @import '../styles/learning.css';
 @import '../styles/course.css';

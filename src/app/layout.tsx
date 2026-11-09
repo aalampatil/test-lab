@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
+import { ClerkProvider } from '@clerk/nextjs';
+import { shadcn } from '@clerk/ui/themes';
+import { ConvexClientProvider } from '@/components/convex-provider';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -12,7 +15,19 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ? (
+          <ClerkProvider appearance={{ theme: shadcn }}>
+            {process.env.NEXT_PUBLIC_CONVEX_URL ? (
+              <ConvexClientProvider>{children}</ConvexClientProvider>
+            ) : (
+              children
+            )}
+          </ClerkProvider>
+        ) : (
+          children
+        )}
+      </body>
     </html>
   );
 }

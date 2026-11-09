@@ -1,5 +1,6 @@
 'use client';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, type ReactNode } from 'react';
+import { SignInButton, SignUpButton, UserButton, useAuth } from '@clerk/nextjs';
 import {
   ArrowRight,
   ArrowUpRight,
@@ -24,7 +25,14 @@ import {
   Terminal,
 } from 'lucide-react';
 import { lessons, concepts } from '@/lib/content';
-import { emptyProgress, progressSchema, type Progress, type View } from '@/lib/progress';
+import {
+  emptyProgress,
+  mergeProgress,
+  progressSchema,
+  type Progress,
+  type View,
+} from '@/lib/progress';
+import { ProgressSync, ProgressSyncBoundary } from '@/components/progress-sync';
 import { Dashboard, LearningPaths, BugHunting } from '@/components/features/dashboard';
 import { Fundamentals } from '@/components/features/fundamentals';
 import { ToolExplorer } from '@/components/features/tools';
@@ -43,6 +51,35 @@ const navigation = [
 ] as const;
 
 export default function TestLab() {
+  return process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ? <ClerkWorkspace /> : <Workspace />;
+}
+
+function ClerkWorkspace() {
+  const { isLoaded, isSignedIn, userId } = useAuth();
+  if (!isLoaded) return <p role="status">Loading your workspace…</p>;
+  return (
+    <Workspace
+      key={isSignedIn ? userId : 'guest'}
+      userId={isSignedIn ? userId : undefined}
+      accountControls={
+        isSignedIn ? (
+          <UserButton />
+        ) : (
+          <>
+            <SignInButton mode="modal">
+              <Button variant="outline">Sign in</Button>
+            </SignInButton>
+            <SignUpButton mode="modal">
+              <Button>Create account</Button>
+            </SignUpButton>
+          </>
+        )
+      }
+    />
+  );
+}
+
+function Workspace({ userId, accountControls }: { userId?: string; accountControls?: ReactNode }) {
   const [view, setView] = useState<View>('overview');
   const [lessonId, setLessonId] = useState('first-test');
   const [progress, setProgress] = useState<Progress>(emptyProgress);
@@ -53,15 +90,25 @@ export default function TestLab() {
   const [dark, setDark] = useState(false);
   const [mobile, setMobile] = useState(false);
   const [name, setName] = useState('');
-  const [databaseMode, setDatabaseMode] = useState(false);
+  const [guestProgress, setGuestProgress] = useState<Progress | null>(null);
+  const storageKey = userId ? `testlab-progress-v1:${userId}` : 'testlab-progress-v1';
   useEffect(() => {
     // Hydrate browser-owned state after the server-rendered first paint.
     const frame = requestAnimationFrame(() => {
       try {
-        const saved = localStorage.getItem('testlab-progress-v1');
+        const saved = localStorage.getItem(storageKey);
         if (saved) {
           const parsed = progressSchema.safeParse(JSON.parse(saved));
           if (parsed.success) setProgress(parsed.data);
+        }
+        if (userId) {
+          const guest = localStorage.getItem('testlab-progress-v1');
+          const parsed = guest ? progressSchema.safeParse(JSON.parse(guest)) : null;
+          if (
+            parsed?.success &&
+            (parsed.data.completed.length || Object.keys(parsed.data.drafts).length)
+          )
+            setGuestProgress(parsed.data);
         }
         setDark(localStorage.getItem('testlab-theme') === 'dark');
       } catch {
@@ -89,42 +136,15 @@ export default function TestLab() {
       cancelAnimationFrame(frame);
       window.removeEventListener('popstate', syncRoute);
     };
-  }, []);
+  }, [storageKey, userId]);
   useEffect(() => {
     if (loaded)
       try {
-        localStorage.setItem('testlab-progress-v1', JSON.stringify(progress));
+        localStorage.setItem(storageKey, JSON.stringify(progress));
       } catch {
         queueMicrotask(() => setStorageError(true));
       }
-  }, [progress, loaded]);
-  useEffect(() => {
-    let cancelled = false;
-    fetch('/api/progress', { signal: AbortSignal.timeout(4000) })
-      .then((r) => r.json())
-      .then((data) => {
-        if (cancelled || data.mode !== 'database') return;
-        const parsed = progressSchema.safeParse(data.progress);
-        if (parsed.success)
-          setProgress((p) => (p.completed.length > parsed.data.completed.length ? p : parsed.data));
-        setDatabaseMode(true);
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-  useEffect(() => {
-    if (!loaded || !databaseMode) return;
-    const timeout = setTimeout(() => {
-      fetch('/api/progress', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(progress),
-      }).catch(() => {});
-    }, 750);
-    return () => clearTimeout(timeout);
-  }, [progress, loaded, databaseMode]);
+  }, [progress, loaded, storageKey]);
   useEffect(() => {
     document.documentElement.dataset.theme = dark ? 'dark' : 'light';
     if (loaded)
@@ -306,6 +326,7 @@ export default function TestLab() {
             <strong>{label}</strong>
           </div>
           <div className="topbar-actions">
+            {accountControls}
             <button className="global-search" onClick={() => setModal('search')}>
               <Search size={15} />
               <span>Search anything...</span>
@@ -350,6 +371,38 @@ export default function TestLab() {
           {storageError && (
             <div className="storage-warning" role="status">
               Browser storage is unavailable. Your progress will last for this session only.
+            </div>
+          )}
+          {userId &&
+            loaded &&
+            (process.env.NEXT_PUBLIC_CONVEX_URL ? (
+              <ProgressSyncBoundary>
+                <ProgressSync progress={progress} setProgress={setProgress} />
+              </ProgressSyncBoundary>
+            ) : (
+              <div className="storage-warning" role="status">
+                Account sync is not configured yet. Progress is saved in this browser.
+              </div>
+            ))}
+          {guestProgress && (
+            <div className="storage-warning" role="status">
+              This browser has guest progress.{' '}
+              <Button
+                variant="outline"
+                onClick={() => {
+                  const imported = mergeProgress(guestProgress, progress);
+                  setProgress(imported);
+                  setGuestProgress(null);
+                  try {
+                    localStorage.setItem(storageKey, JSON.stringify(imported));
+                    localStorage.removeItem('testlab-progress-v1');
+                  } catch {
+                    setStorageError(true);
+                  }
+                }}
+              >
+                Import guest progress into this account
+              </Button>
             </div>
           )}
           {view === 'overview' && <Dashboard progress={progress} navigate={navigate} />}
@@ -435,7 +488,11 @@ export default function TestLab() {
         onOpenChange={(open) => !open && setModal(null)}
         title="Make yourself at home"
       >
-        <p className="dialog-intro">Your learning space, on this device. No account needed.</p>
+        <p className="dialog-intro">
+          {userId
+            ? 'Your personal learning space.'
+            : 'Your learning space, on this device. Sign in to save progress across devices.'}
+        </p>
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -465,8 +522,9 @@ export default function TestLab() {
             </div>
           </div>
           <p className="muted small">
-            Progress and code drafts are saved in this browser. Clearing browser data will remove
-            them.
+            {userId && process.env.NEXT_PUBLIC_CONVEX_URL
+              ? 'Progress and drafts sync to your account, with a copy saved in this browser.'
+              : 'Progress and code drafts are saved in this browser. Clearing browser data will remove them.'}
           </p>
           <Button type="submit">
             Save changes
@@ -556,9 +614,9 @@ export default function TestLab() {
         <div className="info-note">
           <Terminal size={18} />
           <p>
-            You’re using local mode. Practice runs use a restricted Vitest-style interpreter;
-            progress stays on this device. Full Vitest and PostgreSQL need the infrastructure
-            described in the project README.
+            Practice runs use a restricted Vitest-style interpreter unless a separate runner is
+            configured. Sign in to sync progress when account storage is configured. Guest progress
+            stays on this device.
           </p>
         </div>
         <Button onClick={() => navigate('fundamentals')}>
