@@ -10,32 +10,34 @@ This document inventories the existing configuration and missing work. It does n
 
 These are implemented settings, not a complete production environment template.
 
-| Setting / file   | What exists now                                                                                                                 | What production still needs                                                                                                                                                                                         |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `DATABASE_URL`   | Optional Prisma/PostgreSQL connection. Without it, progress stays in the browser.                                               | A verified production database, protected credentials, connection limits, transport settings, reviewed migrations, backups, and a tested restore process.                                                           |
-| `RUNNER_URL`     | Optional URL used by the web API to reach the isolated-runner service. Unset uses the restricted local interpreter.             | If full Vitest is offered: a reachable private service, authenticated transport, network restrictions, health checks, and deployment verification. A browser-facing public URL is not the intended runner boundary. |
-| `RUNNER_TOKEN`   | Shared bearer token between the web API and standalone runner. The service requires at least 24 characters.                     | Generate a high-entropy secret, inject the same value into both processes through secret management, rotate it, and verify that unauthorized requests fail. Do not reuse the practice app’s demo token.             |
-| `RUNNER_PORT`    | Standalone runner reads this from its process environment; default is 4001. The host binding is currently fixed to `127.0.0.1`. | Decide the private networking topology. Cross-host access requires a deliberate private proxy/service binding change; setting this port alone does not make a loopback service reachable remotely.                  |
-| `NODE_ENV`       | Next.js build/start modes and the progress cookie’s Secure flag use the normal environment.                                     | Deploy with the framework’s production command behind HTTPS. Do not interpret this flag as a release approval or a way to remove the development-only notice.                                                       |
-| `next.config.ts` | Cache Components, React Compiler, partial prefetching, a Tailwind loader, and experimental agent feedback are enabled.          | Review the installed version’s deployment guidance, experimental options, runtime compatibility, security headers, asset delivery, and proxy behavior on the actual host.                                           |
-| Prisma schema    | Anonymous learner UUID plus a JSON progress document.                                                                           | Define the production data/identity model and migration process. `prisma db push` is the current development convenience, not a reviewed migration rollout.                                                         |
-| Lockfiles        | Root and practice project lockfiles are committed. Fonts and editor assets are self-hosted.                                     | Pin the deployment Node version, use `npm ci` in the correct build directory, include required build tools, and verify a fresh reproducible artifact.                                                               |
+| Setting / file           | What exists now                                                                                                                 | What production still needs                                                                                                                                                                                         |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Clerk keys               | Optional Clerk provider, account controls, and session middleware.                                                              | Configure separate development/production instances, production domain, login methods, and verify the complete session lifecycle.                                                                                   |
+| `NEXT_PUBLIC_CONVEX_URL` | Optional authenticated reactive progress sync. Guests stay local.                                                               | Separate development/preview/production deployments, configure the correct Clerk issuer on each, deploy functions, and verify account isolation, backups, restore, quotas, and capacity.                            |
+| `CONVEX_DEPLOY_KEY`      | Used by Convex CLI during deployment; never sent to the browser.                                                                | Set a deployment-appropriate private key in Vercel and verify preview builds cannot change production data.                                                                                                         |
+| `RUNNER_URL`             | Optional URL used by the web API to reach the isolated-runner service. Unset uses the restricted local interpreter.             | If full Vitest is offered: a reachable private service, authenticated transport, network restrictions, health checks, and deployment verification. A browser-facing public URL is not the intended runner boundary. |
+| `RUNNER_TOKEN`           | Shared bearer token between the web API and standalone runner. The service requires at least 24 characters.                     | Generate a high-entropy secret, inject the same value into both processes through secret management, rotate it, and verify that unauthorized requests fail. Do not reuse the practice app’s demo token.             |
+| `RUNNER_PORT`            | Standalone runner reads this from its process environment; default is 4001. The host binding is currently fixed to `127.0.0.1`. | Decide the private networking topology. Cross-host access requires a deliberate private proxy/service binding change; setting this port alone does not make a loopback service reachable remotely.                  |
+| `NODE_ENV`               | Next.js build/start modes and the progress cookie’s Secure flag use the normal environment.                                     | Deploy with the framework’s production command behind HTTPS. Do not interpret this flag as a release approval or a way to remove the development-only notice.                                                       |
+| `next.config.ts`         | Cache Components, React Compiler, partial prefetching, a Tailwind loader, and experimental agent feedback are enabled.          | Review the installed version’s deployment guidance, experimental options, runtime compatibility, security headers, asset delivery, and proxy behavior on the actual host.                                           |
+| Convex schema            | Issuer-scoped Clerk owner and bounded progress data; transactional completion merging.                                          | Review schema changes, retention/deletion, conflict semantics, and hosted authorization. Existing PostgreSQL data requires a separate migration if needed.                                                          |
+| Lockfiles                | Root and practice project lockfiles are committed. Fonts and editor assets are self-hosted.                                     | Pin the deployment Node version, use `npm ci` in the correct build directory, include required build tools, and verify a fresh reproducible artifact.                                                               |
 
-Next.js reads `.env.local` for the web application. Prisma’s config also reads that file. **The standalone runner does not load it:** its variables must be supplied to its own process. Do not put server secrets in `NEXT_PUBLIC_*` variables, client bundles, logs, or committed files.
+Next.js reads `.env.local` for the web application. Convex deployment configuration, including `CLERK_JWT_ISSUER_DOMAIN`, belongs on the corresponding Convex deployment. **The standalone runner does not load Next.js environment files:** its variables must be supplied to its own process. Do not put server secrets in `NEXT_PUBLIC_*` variables, client bundles, logs, or committed files.
 
-There are currently no implemented authentication-provider, email-provider, monitoring-provider, shared rate-limit, or deployment-origin environment settings. Names such as an auth secret or OAuth callback URL must be chosen alongside the corresponding implementation. Adding arbitrary variables to `.env.local` will not create those features.
+Clerk and Convex configuration is documented in [clerk-setup.md](clerk-setup.md) and [convex-setup.md](convex-setup.md). Email-provider, monitoring-provider, shared rate-limit, and deployment-origin controls still need implementation/configuration. Adding arbitrary variables to `.env.local` will not create those features.
 
 ## Missing implementation and production decisions
 
 ### 1. Accounts, sessions, and progress
 
-Current behavior is browser-local progress with optional anonymous cookie-scoped PostgreSQL storage. The editable display name is not an authenticated identity.
+Current behavior is guest browser-local progress or optional Clerk account progress stored in Convex. The editable display name is not an authorization identity; Convex derives ownership from the verified token.
 
 Before promising accounts or cross-device synchronization:
 
-- Implement and test sign-in, session expiration, sign-out, account recovery as applicable, and server-side authorization.
-- Define how anonymous progress is associated with an account, merged across devices, and migrated as course content changes.
-- Handle concurrent updates and surface failed synchronization with clear recovery behavior.
+- Verify implemented sign-in, session expiration, sign-out, account recovery as applicable, and server-side authorization against the configured live instances.
+- Verify explicit guest-progress import and account switching; define migrations as course content changes.
+- Verify concurrent completion merging and failed-save retry behavior; review latest-save draft conflicts and offline limitations.
 - Add progress export/deletion and appropriate retention/privacy documentation for hosted user data.
 - Keep verified in-app outcomes distinguishable from self-reported project practice. The current client-owned completion flags must not become trusted certificates or assessment evidence.
 
@@ -48,7 +50,7 @@ The API currently validates submissions with Zod and the interpreter limits supp
 - Enforce request body limits at the HTTP ingress and application boundary, including requests without a reliable Content-Length header.
 - Add suitable per-user/session and network-level rate limits, admission limits, timeouts, and overload responses.
 - Use a consistent shared limit mechanism when multiple web instances are deployed; an individual process’s counters are not a global quota.
-- Review same-origin/CSRF behavior through the actual HTTPS proxy and deployment hostname. The progress endpoint currently compares Origin with the request URL’s origin.
+- Review token transport and cross-origin behavior through the actual HTTPS proxy and deployment hostname. The old cookie-based progress endpoint has been removed.
 - Review security headers and a tested content security policy that accommodates the local editor bundle and worker. No production-specific policy is configured in the current Next.js config.
 - Ensure logs and error reports do not retain source submissions, drafts, tokens, or credentials unnecessarily.
 
@@ -66,19 +68,19 @@ If the public product retains only the restricted interpreter, do not configure 
 
 ### 4. Database and data operations, if enabling server persistence
 
-- Verify the real Prisma/PostgreSQL connection and session-scoped read/write authorization in staging.
-- Create reviewed versioned migrations and a controlled migration/deployment order. Test failure and rollback/recovery procedures.
-- Define database roles, connection pooling/limits, required encryption, credential rotation, and environment separation for the chosen host.
+- Verify the real Clerk/Convex connection and token-scoped read/write authorization in staging.
+- Review schema changes and a controlled backend/frontend deployment order. Test failure and rollback/recovery procedures.
+- Configure deployment keys, issuer settings, quotas, retention, and environment separation.
 - Configure backups and demonstrate a restore. Monitor capacity and connection failures.
-- Test unavailable database behavior, concurrent saves, anonymous-session lifecycle, account migration if added, and browser/server reconciliation.
+- Test unavailable database behavior, concurrent saves, session lifecycle, guest import, account switching, and browser/server reconciliation.
 
-Leaving `DATABASE_URL` blank deliberately provides browser-only progress. It does not provide durable hosted user accounts or cross-device storage.
+Leaving Clerk or Convex unconfigured provides browser-only progress. Neon, Prisma, and `DATABASE_URL` are no longer used.
 
 ### 5. Hosting and operations
 
-No production hosting target, public domain, deployment pipeline, or operational owner has been established in this repository.
+Vercel is the selected hosting target, with Clerk and Convex. A linked deployment, public domain, deployment pipeline, and operational owner still need verification.
 
-- Choose and verify a host compatible with the installed Next.js version and required Node runtime. Docker workers cannot be assumed to run inside ordinary serverless web functions.
+- Verify Vercel compatibility with the installed Next.js version and pin the required Node runtime. Docker workers cannot run inside ordinary serverless web functions; an isolated execution service remains separate work.
 - Configure the public domain, TLS, trusted proxy behavior, service networking, environment separation, and secret injection.
 - Deploy an immutable build produced by `npm ci` and `npm run build`; use the supported production start/runtime command, not `next dev`.
 - Add automated release checks, an observed staging rollout, deployment rollback, health monitoring, error tracking, and incident ownership.

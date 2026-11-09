@@ -14,10 +14,10 @@ This is a personal learning application first. The following work belongs to a l
 
 ## User data
 
-- Add real authentication before promising accounts or cross-device progress.
+- Verify the implemented Clerk authentication and Convex progress sync on live staging before promising accounts or cross-device progress.
 - Define progress export, deletion, privacy expectations, and retention if hosting data for other people.
 - Do not treat browser or self-reported progress as trusted certification evidence.
-- Test optional PostgreSQL persistence against a disposable real database, including failures and concurrent updates.
+- Test Convex persistence against a separate development/preview deployment with fake data, including failures, concurrent updates, guest import, sign-out, and account switching.
 
 ## Execution and hosting
 

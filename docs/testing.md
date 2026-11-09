@@ -66,4 +66,4 @@ The initial project intentionally includes only one passing test. Create the tes
 - The CI example is a workflow template. A hosted run requires the learner’s own repository and an observed workflow execution.
 - A diagnostic performance budget is not a load-test report or a production capacity guarantee.
 - An automated accessibility scan does not replace manual keyboard and assistive-technology testing.
-- Live PostgreSQL and Docker modes require separate environment verification.
+- Live Clerk/Convex account sync and Docker execution require separate environment verification. The local Convex harness checks authorization and persistence behavior without proving hosted JWT verification.

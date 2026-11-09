@@ -1,5 +1,32 @@
 # Local verification report
 
+## Clerk and Convex integration — 10 November 2026
+
+Verified locally on Windows with Node.js 25.9.0 and installed Chrome:
+
+- `npm test`: 80 tests passed across four files, including Convex ownership,
+  unauthenticated access rejection, issuer separation, validation, completion
+  merging, and progress reconciliation. Convex checks use the local `convex-test`
+  harness; they do not verify live Clerk JWT validation.
+- `npm run lint` and `npx tsc --noEmit`: passed.
+- `npm run build`: passed, with the guest workspace prerendered and the Clerk proxy
+  included. The build ran without configured Clerk/Convex credentials.
+- `npm run test:e2e`: all seven existing guest learning flows passed against the
+  production server, including reload persistence, drafts, desktop/mobile layout,
+  editor loading, course search, knowledge checks, and clipboard use.
+
+Live Clerk sign-up/sign-in, account switching in a real browser, Convex token
+verification, cross-device subscriptions, Vercel deployment, backups, and restore
+remain unverified until the corresponding instances and environment settings are
+provided. Production readiness remains incomplete.
+
+An older development-generated route validator still referenced the removed
+progress API. `next typegen` regenerated production types but did not clear that
+older development validator; removing the stale generated validator allowed
+TypeScript and the production build to pass. No application types were suppressed.
+
+## Original learning build
+
 Verified on 6 November 2026, on Windows with the installed Node.js runtime and Chrome.
 
 | Area                                                      | Result                                                                                                                                                       |
@@ -16,4 +43,4 @@ The initial visual baseline was inspected, then a normal comparison run passed. 
 
 The starter’s intentionally low coverage demonstrates that only the initial exercise is written; it is not a claim that the practice application has comprehensive test coverage. Write the other lab tests yourself.
 
-Live PostgreSQL, live Docker execution, and hosted GitHub Actions were not available for end-to-end verification. Project-lab completion remains explicitly self-reported. Root and practice-project test commands and their scope are documented in [testing.md](testing.md).
+Live PostgreSQL, live Docker execution, and hosted GitHub Actions were not available for the original end-to-end verification. PostgreSQL has since been replaced by Clerk-authenticated Convex persistence; those live deployments still need verification. Project-lab completion remains explicitly self-reported. Root and practice-project test commands and their scope are documented in [testing.md](testing.md).

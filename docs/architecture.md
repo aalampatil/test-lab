@@ -13,7 +13,7 @@ flowchart TD
   B -->|Real-project lab| H[Saved draft and copyable terminal command]
   H --> I[Learner runs tools in practice-project]
   I --> J[Knowledge check and self-reported practice checklist]
-  F --> K[Browser progress with optional PostgreSQL backup]
+  F --> K[Browser progress and optional Clerk-authenticated Convex sync]
   J --> K
 ```
 
@@ -36,11 +36,11 @@ src/lib/curriculum/stages.ts     Ordered personal learning stages
 src/lib/testing/                Interpreter, subjects, objective checks, regression tests
 src/lib/project-guides.ts       JS/TS file-level setup examples for browser lessons
 src/lib/progress.ts             Versioned progress schema
-src/lib/database.ts             Optional Prisma adapter
+src/lib/convex-api.ts           Typed Convex function references
 src/styles/                    Workspace, learning, course, and responsive styles
 practice-project/              Independent runnable TaskBoard learning project
 runner/                        Optional private Docker orchestration
-prisma/                        Optional PostgreSQL schema
+convex/                        Clerk verification, schema, progress queries/mutations
 scripts/                       Asset setup, starter generation, example verification
 tests/e2e/                     TestLab browser-flow checks
 docs/                          This documentation
@@ -50,7 +50,7 @@ docs/                          This documentation
 
 Browser storage holds the profile name, completion IDs, activity, estimated rounded session minutes, and code drafts. Existing completion IDs remain valid when the curriculum grows; percentages use the current total. Adding content therefore increases the denominator without deleting progress.
 
-Optional PostgreSQL storage uses Prisma and an anonymous HttpOnly session cookie. It is not an account system, not cross-device login, and not proof that repository tests ran. Do not use these completion flags as a credential or public assessment score.
+Optional Clerk authentication identifies accounts. Convex queries and mutations verify the Clerk token and derive record ownership from the issuer-scoped token identifier. Guests stay local; signed-in users have separate browser caches and can explicitly import guest progress. Reactive subscriptions receive server updates, and transactional saves preserve completion history. Draft conflicts use the latest accepted save. This is not proof that repository tests ran. Do not use completion flags as a credential or public assessment score. See [Convex setup](convex-setup.md) for environment separation and deployment.
 
 Concept IDs currently use stable append-only indices (`concept-0`, etc.). Do not reorder existing concepts without a progress migration. Practical lessons use stable slugs.
 
@@ -66,4 +66,4 @@ The React component labs exercise `TaskForm.jsx` as a standalone component. The 
 
 Geist fonts and the Monaco bundle are self-hosted. The editor build replaces Monaco’s vendored sanitizer with the patched dependency as well as overriding the package-level dependency. Generated assets are ignored and reproduced during setup/build.
 
-The optional Docker runner limits network, memory, CPU, processes, capabilities, execution time, and output. A live Docker host and a live PostgreSQL database were not supplied for verification. See the root README for their separate setup and limitations.
+The optional Docker runner limits network, memory, CPU, processes, capabilities, execution time, and output. Live Docker, Clerk, and Convex deployments still need verification. See the root README for their separate setup and limitations.

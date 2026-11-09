@@ -15,7 +15,7 @@ npm run dev
 
 Open http://localhost:3000. The overview is the default workspace. The About TestLab navigation item opens the product introduction; every learning screen is shareable through its URL query parameters, and browser back/forward navigation works.
 
-`npm install` generates the Prisma client and builds Monaco assets into `public/monaco`. Both fonts and the editor are self-hosted. If installation scripts were disabled, run `npm run db:generate` and `node scripts/setup-monaco.mjs` yourself. The simple editor remains usable while Monaco loads, or can be selected explicitly.
+`npm install` builds Monaco assets into `public/monaco`. Both fonts and the editor are self-hosted. If installation scripts were disabled, run `node scripts/setup-monaco.mjs` yourself. The simple editor remains usable while Monaco loads, or can be selected explicitly.
 
 ## What works
 
@@ -29,7 +29,7 @@ Open http://localhost:3000. The overview is the default workspace. The About Tes
 - A searchable/filterable catalog of Vitest, Jest, React Testing Library, Playwright, Cypress, and Postman, including installation examples and documentation links. Only Vitest-style lessons execute.
 - Local progress, profile name, theme selection, recent activity, keyboard search, and responsive navigation.
 
-Local progress is stored under `testlab-progress-v1` in this browser. It is not an authenticated account and does not sync between devices. Clearing browser data removes the local copy. If browser storage is unavailable, a visible message explains that progress is session-only.
+Guest progress is stored under `testlab-progress-v1` in this browser. Signed-in users have separate browser copies and sync through Clerk-authenticated Convex functions when configured. Guest progress can be explicitly imported into an account. If browser storage is unavailable, a visible message explains that the browser copy is session-only.
 
 ## Folder structure
 
@@ -39,7 +39,6 @@ Start with [the project documentation](docs/README.md) for setup, your personal 
 src/
   app/
     api/run/route.ts          Validated execution API and runner selection
-    api/progress/route.ts     Optional cookie-scoped PostgreSQL progress API
     layout.tsx               Metadata, local fonts, application styles
     page.tsx                 Workspace entry point
     icon.svg                 TestLab favicon
@@ -56,14 +55,14 @@ src/
     content.ts               Public catalog and stable original content
     curriculum/              Typed stages, expanded lessons, concepts, glossary, starter files
     progress.ts              Versioned progress schema and shared types
-    database.ts              Optional Prisma/PostgreSQL connection
+    convex-api.ts            Typed Convex function references
     testing/                 Restricted interpreter and regression tests
     utils.ts                 Shared class-name helper
   styles/
     workspace.css            Shell, dashboard, and learning paths
     learning.css             Lessons, quizzes, toolkit, and playground
     responsive.css           Breakpoints and reduced-motion support
-prisma/                      PostgreSQL schema
+convex/                      Schema, Clerk verification, progress queries/mutations
 runner/                      Trusted orchestrator and isolated Vitest container
 scripts/                     Reproducible local asset setup
 tests/e2e/                   Browser learning-flow and mobile tests
@@ -108,18 +107,17 @@ The execution API still validates lesson objectives with the restricted interpre
 
 Keep the orchestrator and Docker socket private. The service binds to loopback by default and accepts two concurrent runs. Run it on a dedicated execution host for deployment. Container isolation shares the host kernel; use a hardened container runtime or microVM boundary before accepting unrestricted public workloads. Serverless hosting generally cannot launch Docker; host the runner separately behind an authenticated private service. The fixed Vitest container is the first execution adapter; add separate adapters and objective validators for other frameworks.
 
-## Optional PostgreSQL persistence
+## Clerk accounts and Convex persistence
 
-Requires your own PostgreSQL database. Copy `.env.example` to `.env.local`, set `DATABASE_URL`, and run:
+See [Clerk setup](docs/clerk-setup.md) for the existing Clerk application and [Convex setup](docs/convex-setup.md) for backend deployment, authentication, and Vercel environment separation. Put development keys in `.env.local`, configure the Clerk issuer on the Convex development deployment, then run:
 
 ```sh
-npm run db:generate
-npm run db:push
+npm run db:dev
 ```
 
-Restart Next.js. The app then loads and saves progress through `/api/progress`, retaining a browser copy as a fallback. Prisma uses the PostgreSQL driver adapter. Server data is scoped by a random HttpOnly, SameSite cookie; no user-supplied learner ID is trusted. This is anonymous session persistence, not login or cross-device identity. Add authentication before offering named accounts. The database schema is available, but a live database was not provided for verification.
+Restart Next.js after setting `NEXT_PUBLIC_CONVEX_URL`. Clerk owns sessions, and Convex derives record ownership from verified identity. Clients cannot supply another user's ID to read or write progress. Completions merge transactionally; draft conflicts use the latest accepted save. Progress remains learner-owned learning data, not certification evidence.
 
-`db:push` applies the schema to a development database. For hosted releases, generate and review migrations before applying them. Never commit credentials. Only the blank `.env.example` is tracked.
+Neon, PostgreSQL, Prisma, and the old anonymous progress endpoint are no longer used. Existing PostgreSQL rows are not automatically migrated or deleted. Export/import existing production data through a separately reviewed migration if needed. Never commit credentials. Only the blank `.env.example` is tracked.
 
 ## Checks
 
@@ -147,7 +145,7 @@ npm start
 
 ## MVP boundaries
 
-No fake sign-in, certificates, live in-app coverage reports, or simulated execution for the informational tool guides. This MVP includes local learning, real browser/API exercises in the separate practice project, and anonymous optional PostgreSQL storage. Authentication, cross-device accounts, remote verification of project labs, and a hosted execution fleet require additional implementation and infrastructure. Use the installed Next.js documentation under `node_modules/next/dist/docs/` before changing framework APIs.
+This build includes guest learning and optional Clerk accounts with Convex progress sync. Live authentication, storage, and production operations still need verification on the configured deployments. Remote verification of project labs and a hosted execution fleet remain separate work. Use the installed Next.js documentation under `node_modules/next/dist/docs/` before changing framework APIs.
 
 ## License
 

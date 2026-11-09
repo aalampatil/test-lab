@@ -11,7 +11,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:3000. Start with Fundamentals or Learning paths. Root installation generates Prisma’s client and builds the self-hosted Monaco editor assets. No database or Docker is required for the browser exercises. Fonts and editor assets do not need a CDN at runtime.
+Open http://localhost:3000. Start with Fundamentals or Learning paths. Root installation builds the self-hosted Monaco editor assets. No database or Docker is required for guest browser exercises. Fonts and editor assets do not need a CDN at runtime.
 
 In an exercise, use The lesson, Syntax explained, and Your project. The last tab teaches real file paths, JavaScript/TypeScript examples, setup, imports, and run commands.
 
@@ -88,4 +88,4 @@ Create the lab’s test file first. Playwright starts the application automatica
 - **Port 3100 in use:** stop your earlier TaskBoard process or use the existing development server intentionally.
 - **Thousands of Git changes:** `node_modules/`, coverage, verification fixtures, and test output are ignored at every depth. Commit source and lockfiles, not installed dependencies.
 
-Optional PostgreSQL and Docker setup remains in the root README. Neither is needed to start learning.
+Optional Clerk/Convex account setup and Docker execution are described in the root README. Neither is needed to start learning as a guest.
