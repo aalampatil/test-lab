@@ -11,6 +11,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "test:accounts": "node scripts/verify-account-flow.mjs",
+    "build:accounts": "node scripts/account-test-server.mjs build",
+    "start:accounts": "node scripts/account-test-server.mjs start --hostname localhost --port 3002",
     "config:check": "node scripts/check-config.mjs",
     "format": "prettier --write src runner tests *.ts *.mts *.mjs *.json README.md",
     "db:dev": "convex dev",
@@ -38,6 +41,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@clerk/backend": "^3.27.0",
     "@next/env": "^16.4.5",
     "@playwright/test": "^1.65.0",
     "@tailwindcss/turbopack": "^4",
