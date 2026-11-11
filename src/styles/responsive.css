@@ -537,7 +537,12 @@
   }
   .topbar {
     padding: 0 20px;
-    height: 62px;
+    min-height: 62px;
+    height: auto;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-top: 12px;
+    padding-bottom: 12px;
   }
   .breadcrumbs {
     gap: 12px;
@@ -545,6 +550,8 @@
   }
   .topbar-actions {
     gap: 15px;
+    flex-wrap: wrap;
+    max-width: 100%;
   }
   .topbar-divider {
     display: none;
