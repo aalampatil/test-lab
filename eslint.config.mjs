@@ -13,6 +13,7 @@ const eslintConfig = defineConfig([
     'build/**',
     'next-env.d.ts',
     'src/generated/**',
+    'convex/_generated/**',
     'public/monaco/**',
     'test-results/**',
     'playwright-report/**',
