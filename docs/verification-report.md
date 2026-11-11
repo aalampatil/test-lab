@@ -1,5 +1,19 @@
 # Local verification report
 
+## Production domain and Clerk configuration
+
+The owner selected `testlab.aalampatil.in`. Vercel confirms that it is attached to
+the correct project, verified, and correctly configured in DNS. All five Clerk
+CNAME records match public DNS. HTTPS discovery for
+`https://clerk.testlab.aalampatil.in` returns HTTP 200 and the expected issuer.
+The missing production `convex` JWT template was created with audience `convex`,
+and the matching issuer was set on production Convex. Existing login methods and
+DNS records were not changed. See [the domain record](production-domain.md).
+
+This supersedes the earlier unconfirmed issuer/template observations below.
+Production backend/frontend deployment and complete real-account authentication
+remain to be verified; no production test users were created.
+
 ## Connected development services — 12 November 2026
 
 - Linked the existing TestLab Convex project to a cloud development deployment;

@@ -9,6 +9,7 @@ TestLab is a personal learning workspace first. Work through small tests in the 
 - [Architecture](architecture.md): folders, execution boundaries, data, and infrastructure.
 - [Clerk setup](clerk-setup.md): configure the existing authentication application and Vercel keys.
 - [Convex setup](convex-setup.md): authenticated progress storage and separate development/preview/production deployments.
+- [Production domain](production-domain.md): verified Vercel and Clerk domain settings and DNS records.
 - [Testing and verification](testing.md): verify the application and the course examples.
 - [Local verification report](verification-report.md): observed results and unverified infrastructure.
 - [Writing course content](curriculum-authoring.md): add lessons without breaking execution or progress.
