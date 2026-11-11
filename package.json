@@ -11,6 +11,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "config:check": "node scripts/check-config.mjs",
     "format": "prettier --write src runner tests *.ts *.mts *.mjs *.json README.md",
     "db:dev": "convex dev",
     "db:deploy": "convex deploy",
@@ -37,6 +38,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@next/env": "^16.4.5",
     "@playwright/test": "^1.65.0",
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^20",

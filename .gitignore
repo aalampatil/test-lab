@@ -41,6 +41,10 @@ test-results/
 # vercel
 .vercel
 
+# Local Convex runtime state and generated API files (the app uses schema-derived types).
+.convex/
+convex/_generated/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
