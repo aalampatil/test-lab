@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
 import { ClerkProvider } from '@clerk/nextjs';
@@ -19,7 +20,9 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
         {process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ? (
           <ClerkProvider appearance={{ theme: shadcn }}>
             {process.env.NEXT_PUBLIC_CONVEX_URL ? (
-              <ConvexClientProvider>{children}</ConvexClientProvider>
+              <Suspense fallback={<p role="status">Loading your workspace…</p>}>
+                <ConvexClientProvider>{children}</ConvexClientProvider>
+              </Suspense>
             ) : (
               children
             )}
