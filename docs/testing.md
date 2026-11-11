@@ -67,3 +67,8 @@ The initial project intentionally includes only one passing test. Create the tes
 - A diagnostic performance budget is not a load-test report or a production capacity guarantee.
 - An automated accessibility scan does not replace manual keyboard and assistive-technology testing.
 - Live Clerk/Convex account sync and Docker execution require separate environment verification. The local Convex harness checks authorization and persistence behavior without proving hosted JWT verification.
+
+The optional `npm run test:accounts -- --allow-test-users` command performs live
+Clerk/Convex checks using disposable development users and cleanup. Run it only
+with approval to create those users, and follow [the account verification setup](convex-setup.md#live-account-verification).
+The existing browser suite can target a dedicated server with `PLAYWRIGHT_BASE_URL`.

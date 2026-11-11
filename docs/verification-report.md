@@ -1,5 +1,40 @@
 # Local verification report
 
+## Connected development services — 12 November 2026
+
+- Linked the existing TestLab Convex project to a cloud development deployment;
+  deployed its schema, owner index, and progress functions.
+- Verified Clerk credentials, issuer discovery, the development Convex JWT
+  template, and anonymous rejection by the deployed progress query using
+  `npm run config:check -- --live`.
+- `npm run test:accounts -- --allow-test-users --api-only`: passed with real Clerk
+  session JWTs and Convex reads/writes, per-user isolation, and authenticated
+  progress deletion. Two disposable users and their progress were removed.
+- `npm test`: 90 tests passed across six files. Lint, TypeScript, and the
+  development-configured production-mode build passed.
+- All seven learning-flow browser checks passed against the isolated configured
+  server. The mobile header now wraps the Clerk account controls without overflow.
+- Created the Vercel project `testlab` and stored ignored local project linkage.
+  No production web deployment was published.
+
+The Clerk development instance has email and username identities disabled.
+Disposable browser sign-in cannot complete without changing those settings, so
+the owner chose to preserve the settings and verify the real-account login
+manually. Live backend JWT verification is verified; real-account browser login,
+cross-device browser sync, and sign-out remain for manual verification.
+
+The separate production environment contains production Clerk keys and a different
+Convex URL. Clerk accepts the production secret, but production issuer discovery,
+the production Convex JWT template, and deployed protected progress functions are
+not yet confirmed. Local development settings take precedence over production
+files under the normal Next.js loading order. Production needs a deliberate
+domain/issuer/deployment configuration and Vercel secret setup before release.
+
+The account verification build/server commands explicitly load development
+credentials before running Next.js in production mode. This keeps build-time
+public keys and runtime secret keys aligned without editing production files.
+The test server uses its own port so the owner's development server is unaffected.
+
 ## Clerk and Convex integration — 10 November 2026
 
 Verified locally on Windows with Node.js 25.9.0 and installed Chrome:

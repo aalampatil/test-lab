@@ -25,7 +25,7 @@ These are implemented settings, not a complete production environment template.
 
 Next.js reads `.env.local` for the web application. Convex deployment configuration, including `CLERK_JWT_ISSUER_DOMAIN`, belongs on the corresponding Convex deployment. **The standalone runner does not load Next.js environment files:** its variables must be supplied to its own process. Do not put server secrets in `NEXT_PUBLIC_*` variables, client bundles, logs, or committed files.
 
-Clerk and Convex configuration is documented in [clerk-setup.md](clerk-setup.md) and [convex-setup.md](convex-setup.md). Email-provider, monitoring-provider, shared rate-limit, and deployment-origin controls still need implementation/configuration. Adding arbitrary variables to `.env.local` will not create those features.
+Clerk and Convex configuration is documented in [clerk-setup.md](clerk-setup.md) and [convex-setup.md](convex-setup.md). Development credentials, token verification, and account isolation have been checked against live services; real-account browser login remains a manual check. Production keys alone do not configure the production issuer, Convex functions, or Vercel secrets. Email-provider, monitoring-provider, shared rate-limit, and deployment-origin controls still need implementation/configuration. Adding arbitrary variables to `.env.local` will not create those features.
 
 ## Missing implementation and production decisions
 
@@ -47,7 +47,7 @@ If a future release intentionally remains anonymous and browser-local, describe 
 
 The API currently validates submissions with Zod and the interpreter limits supported syntax and execution steps. Those controls do not provide a complete public-service abuse boundary.
 
-- Enforce request body limits at the HTTP ingress and application boundary, including requests without a reliable Content-Length header.
+- The execution endpoint now enforces a 20,000-byte limit on streamed request bodies, including missing or understated Content-Length headers. Verify matching ingress limits and overload behavior on the actual host.
 - Add suitable per-user/session and network-level rate limits, admission limits, timeouts, and overload responses.
 - Use a consistent shared limit mechanism when multiple web instances are deployed; an individual process’s counters are not a global quota.
 - Review token transport and cross-origin behavior through the actual HTTPS proxy and deployment hostname. The old cookie-based progress endpoint has been removed.

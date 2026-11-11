@@ -21,6 +21,22 @@ Convex database functions.
 6. Set `NEXT_PUBLIC_CONVEX_URL` in `.env.local` to that deployment's cloud URL and
    restart Next.js. Convex's CLI usually writes this value during setup.
 
+Run `npm run config:check` to check variable names and key environments without
+printing credentials. `npm run config:check -- --live` also checks Clerk issuer
+discovery, the Convex JWT template, and anonymous rejection by the deployed
+progress query. These are read-only checks; they do not prove browser sign-in.
+`CLOUD_URL` and `HTTP_ACTIONS_URL` alone do not configure the Next.js client.
+
+Select a **cloud development** deployment when linking the existing project:
+
+```sh
+npx convex dev --configure existing --dev-deployment cloud --once
+```
+
+A local deployment URL in `.env.local` takes precedence over a cloud URL in `.env`.
+Use the same development deployment for the client, backend functions, and Clerk
+issuer configuration. Generated Convex files and local backend state are ignored.
+
 The client uses `ConvexProviderWithClerk`. Queries wait for Convex authentication,
 which can finish after Clerk sign-in. Every progress function checks
 `ctx.auth.getUserIdentity()` and derives ownership from its `tokenIdentifier`.
@@ -73,3 +89,48 @@ deployment URLs aligned, and test schema changes against nonproduction data firs
 
 Verify sign-in, reload, cross-device progress, sign-out, account switching,
 unauthorized reads/writes, network failures, and guest import before release.
+
+## Live account verification
+
+After explicit approval to create disposable users, run the development account
+check. It creates two temporary Clerk users, verifies real JWTs against Convex,
+tests browser sign-in and draft sync, and deletes only its own test users and data.
+It uses temporary sign-in tickets rather than changing the instance's login methods.
+
+Build and start with matching development keys, even when `.env.production` exists:
+
+```sh
+npm run build:accounts
+npm run start:accounts
+```
+
+In another terminal (PowerShell):
+
+```powershell
+$env:ACCOUNT_TEST_BASE_URL = 'http://localhost:3002'
+npm run test:accounts -- --allow-test-users
+```
+
+For an OAuth-only instance with email identification disabled, preserve its login
+settings and run the backend portion instead:
+
+```powershell
+npm run test:accounts -- --allow-test-users --api-only
+```
+
+That checks real token verification, reads/writes, per-user isolation, and cleanup.
+It does not verify browser sign-in. Test the configured OAuth login with a real
+account, then verify that a saved draft survives reload and appears on another
+device, and that signing out returns to the guest workspace. The full disposable
+browser check requires development email identification and refuses to enable it.
+
+Use a dedicated port so a running development server cannot handle some requests
+for the test server. The configured test server uses `localhost`, matching Clerk's
+development handshake. Do not change `.env.production` to run development checks.
+
+Test cleanup state and failure screenshots live in ignored `.account-verification/`,
+separate from Playwright's output directory. If cleanup fails, run
+`npm run test:accounts -- --cleanup` before another live account test. The script
+refuses production Clerk keys and production Convex deployments. This account
+verification command modifies external development resources; it is not part of
+the default unit or browser suite.
