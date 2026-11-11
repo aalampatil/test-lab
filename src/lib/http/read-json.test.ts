@@ -12,7 +12,8 @@ describe('submission request limits', () => {
     ).toEqual({ code: 'hello' });
   });
   it('rejects oversized bodies with missing or understated Content-Length', async () => {
-    for (const headers of [{}, { 'Content-Length': '1' }]) {
+    const headerCases: HeadersInit[] = [{}, { 'Content-Length': '1' }];
+    for (const headers of headerCases) {
       const request = new Request('https://example.test', {
         method: 'POST',
         body: JSON.stringify({ code: 'x'.repeat(100) }),
