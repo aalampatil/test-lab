@@ -19,6 +19,19 @@ describe('Clerk-owned Convex progress', () => {
       'Sign in',
     );
     expect(await t.run((ctx) => ctx.db.query('learners').collect())).toEqual([]);
+    await expect(t.mutation(api.progress.remove)).rejects.toThrow('Sign in');
+  });
+
+  it('deletes only the authenticated learner and is safe to repeat', async () => {
+    const t = createTest();
+    const alice = t.withIdentity(identity('alice'));
+    const bob = t.withIdentity(identity('bob'));
+    await alice.mutation(api.progress.save, { progress: { ...emptyProgress, name: 'Alice' } });
+    await bob.mutation(api.progress.save, { progress: { ...emptyProgress, name: 'Bob' } });
+    await alice.mutation(api.progress.remove);
+    await alice.mutation(api.progress.remove);
+    expect(await alice.query(api.progress.get)).toBeNull();
+    expect((await bob.query(api.progress.get))?.name).toBe('Bob');
   });
 
   it('separates accounts and derives ownership from the verified identity', async () => {

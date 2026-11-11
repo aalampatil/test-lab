@@ -44,3 +44,19 @@ export const save = mutation({
     return progress;
   },
 });
+
+// Deletes only the caller's stored progress. Also used to clean up disposable
+// development verification users without granting tests administrative data access.
+export const remove = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new ConvexError('Sign in to delete progress.');
+    const learner = await ctx.db
+      .query('learners')
+      .withIndex('by_owner', (q) => q.eq('owner', identity.tokenIdentifier))
+      .unique();
+    if (learner) await ctx.db.delete(learner._id);
+    return null;
+  },
+});
