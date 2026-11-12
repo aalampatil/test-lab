@@ -1,0 +1,68 @@
+name: Bug report
+description: Report a reproducible problem with TestLab or the practice project.
+title: '[Bug]: '
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For vulnerabilities, follow the [security policy](https://github.com/aalampatil/test-lab/blob/main/SECURITY.md).
+        Remove credentials, cookies, personal data, and private environment values from examples and logs.
+  - type: checkboxes
+    id: before-reporting
+    attributes:
+      label: Before reporting
+      options:
+        - label: I searched existing issues for this problem.
+          required: true
+        - label: I agree to follow the [Code of Conduct](https://github.com/aalampatil/test-lab/blob/main/CODE_OF_CONDUCT.md).
+          required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      options:
+        - Learning workspace or navigation
+        - Browser exercise or interpreter
+        - TaskBoard practice project
+        - Progress or account sync
+        - Optional Docker runner
+        - Installation or build
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Include the lesson ID, file, or command when relevant, and a minimal example.
+      placeholder: |
+        1. Start TestLab with...
+        2. Open...
+        3. Run...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Describe the result and any visible error message.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Include your commit, operating system, browser, Node.js version, and whether you use guest mode, accounts, or Docker.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Logs or screenshots
+      description: Optional sanitized logs or screenshots that help reproduce the problem.

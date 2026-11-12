@@ -147,6 +147,13 @@ npm start
 
 This build includes guest learning and optional Clerk accounts with Convex progress sync. Live authentication, storage, and production operations still need verification on the configured deployments. Remote verification of project labs and a hosted execution fleet remain separate work. Use the installed Next.js documentation under `node_modules/next/dist/docs/` before changing framework APIs.
 
+## Contributing and community
+
+Read the [contributing guidelines](CONTRIBUTING.md) for local setup, checks, and pull requests, and
+follow the [Code of Conduct](CODE_OF_CONDUCT.md). Use the
+[issue forms](https://github.com/aalampatil/test-lab/issues/new/choose) for bugs, feature requests, and
+lesson or documentation corrections. Report vulnerabilities through the [security policy](SECURITY.md).
+
 ## License
 
 TestLab’s original code, course content, documentation, and practice project are licensed under the [MIT License](LICENSE). Copyright (c) 2026 aalampatil. Third-party code and assets retain their own licenses; see [licensing details](docs/licensing.md). The development-only release status is separate from the license.

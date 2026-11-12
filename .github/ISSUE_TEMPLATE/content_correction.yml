@@ -1,0 +1,39 @@
+name: Lesson or documentation correction
+description: Report an inaccurate lesson, broken worked example, or unclear documentation.
+title: '[Content]: '
+body:
+  - type: checkboxes
+    id: before-reporting
+    attributes:
+      label: Before reporting
+      options:
+        - label: I searched existing issues for this correction.
+          required: true
+        - label: I agree to follow the [Code of Conduct](https://github.com/aalampatil/test-lab/blob/main/CODE_OF_CONDUCT.md).
+          required: true
+  - type: input
+    id: location
+    attributes:
+      label: Lesson or document
+      description: Provide the lesson ID or title, or the documentation path and section.
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is incorrect or unclear?
+      description: Include the current instruction or example and any command or error needed to reproduce it. Remove private data.
+    validations:
+      required: true
+  - type: textarea
+    id: correction
+    attributes:
+      label: Suggested correction
+      description: Explain what should change. If you are unsure, describe what would make the material clearer.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Supporting references or verification
+      description: Optional official documentation links, a minimal worked example, or the environment and command you used.

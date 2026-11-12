@@ -1,0 +1,37 @@
+name: Feature request
+description: Suggest an improvement to the learning experience or developer workflow.
+title: '[Feature]: '
+body:
+  - type: checkboxes
+    id: before-requesting
+    attributes:
+      label: Before requesting
+      options:
+        - label: I searched existing issues for this suggestion.
+          required: true
+        - label: I agree to follow the [Code of Conduct](https://github.com/aalampatil/test-lab/blob/main/CODE_OF_CONDUCT.md).
+          required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      description: Describe who encounters the problem and a concrete example.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed improvement
+      description: Explain the resulting behavior and how it would help learners or contributors.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives or workarounds
+      description: Include approaches you have tried or considered, if any.
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Optional examples, sketches, or relevant lesson references. Exclude private data.
